@@ -23,12 +23,7 @@
             letter-spacing: 0.5px;
             color: var(--text-dim);
         }
-
-        .studio-badge strong {
-            color: var(--text);
-            font-weight: 800;
-        }
-
+        .studio-badge strong { color: var(--text); font-weight: 800; }
         .install-btn {
             display: none;
             margin-top: 15px;
@@ -43,20 +38,11 @@
             transition: background 0.3s, transform 0.3s;
             font-family: inherit;
         }
-
-        .install-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
+        .install-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
         .install-btn.show { display: inline-block; }
-
-        /* Чтобы контент был над рыбками */
-        .header, .container, .footer { position: relative; z-index: 1; }
     </style>
 </head>
 <body>
-    <!-- Аквариум (виден только в теме «Рыбки») -->
     <div class="aquarium">
         <div class="fish">🐠</div>
         <div class="fish">🐟</div>
@@ -85,15 +71,9 @@
     <div class="container">
         <div class="card" style="text-align: center;">
             <h2 style="font-size: 32px; margin-bottom: 15px;">Добро пожаловать в Ki Tools 🍊</h2>
-            <p style="font-size: 16px; margin-bottom: 10px;">
-                Твой набор полезных инструментов и мини-игр в одном месте.
-            </p>
+            <p style="font-size: 16px; margin-bottom: 10px;">Твой набор полезных инструментов и мини-игр в одном месте.</p>
             <p>Всё работает прямо в браузере, ничего не нужно устанавливать.</p>
-
-            <div class="studio-badge">
-                От <strong>DONATE BOUSE STUDIO</strong>
-            </div>
-
+            <div class="studio-badge">От <strong>DONATE BOUSE STUDIO</strong></div>
             <br>
             <button class="install-btn" id="installBtn" onclick="installApp()">📲 Установить приложение</button>
         </div>
@@ -104,19 +84,16 @@
                 <span class="tile-title">Инструменты</span>
                 <span class="tile-desc">Генератор паролей, калькулятор, конвертер</span>
             </a>
-
             <a href="game.html" class="tile">
                 <span class="tile-icon">🎮</span>
                 <span class="tile-title">Игры</span>
                 <span class="tile-desc">Змейка, 2048, Крестики-нолики</span>
             </a>
-
             <a href="site.html" class="tile">
                 <span class="tile-icon">📖</span>
                 <span class="tile-title">О проекте</span>
                 <span class="tile-desc">Что это и что планируется</span>
             </a>
-
             <a href="https://github.com/dazhisuper0-create" class="tile">
                 <span class="tile-icon">💻</span>
                 <span class="tile-title">GitHub</span>
@@ -145,7 +122,6 @@
     </div>
 
     <script>
-        // Тема
         const savedTheme = localStorage.getItem('ki-theme') || 'orange';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
@@ -171,33 +147,24 @@
             if (e.target === this) closeSettings();
         });
 
-        // Установка приложения (PWA)
         let deferredPrompt;
         const installBtn = document.getElementById('installBtn');
-
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
             installBtn.classList.add('show');
         });
-
         function installApp() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choice) => {
-                    if (choice.outcome === 'accepted') {
-                        installBtn.classList.remove('show');
-                    }
+                    if (choice.outcome === 'accepted') installBtn.classList.remove('show');
                     deferredPrompt = null;
                 });
             }
         }
+        window.addEventListener('appinstalled', () => installBtn.classList.remove('show'));
 
-        window.addEventListener('appinstalled', () => {
-            installBtn.classList.remove('show');
-        });
-
-        // Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
