@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Инструменты — Ki Tools</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF8C00">
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Стили только для этой страницы */
         .tool-section {
             background: var(--card-bg);
             backdrop-filter: blur(10px);
@@ -17,7 +18,6 @@
             margin-bottom: 25px;
             animation: popIn 0.6s ease-out both;
         }
-
         .tool-section h2 {
             font-size: 22px;
             margin-bottom: 18px;
@@ -25,11 +25,7 @@
             align-items: center;
             gap: 10px;
         }
-
-        .field {
-            margin-bottom: 15px;
-        }
-
+        .field { margin-bottom: 15px; }
         .field label {
             display: block;
             font-size: 14px;
@@ -37,7 +33,6 @@
             color: var(--text-dim);
             font-weight: 600;
         }
-
         .field input[type="text"],
         .field input[type="number"],
         .field select {
@@ -52,43 +47,15 @@
             outline: none;
             transition: border-color 0.3s, background 0.3s;
         }
-
-        .field input:focus,
-        .field select:focus {
+        .field input:focus, .field select:focus {
             border-color: var(--primary);
             background: rgba(255, 255, 255, 0.2);
         }
-
-        .field select option {
-            background: #2a2a2a;
-            color: #fff;
-        }
-
-        .range-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .range-row input[type="range"] {
-            flex: 1;
-            accent-color: var(--primary);
-        }
-
-        .range-value {
-            min-width: 35px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 16px;
-        }
-
-        .checkbox-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-
+        .field select option { background: #2a2a2a; color: #fff; }
+        .range-row { display: flex; align-items: center; gap: 12px; }
+        .range-row input[type="range"] { flex: 1; accent-color: var(--primary); }
+        .range-value { min-width: 35px; text-align: center; font-weight: 700; font-size: 16px; }
+        .checkbox-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 15px; }
         .checkbox-row label {
             display: flex;
             align-items: center;
@@ -101,17 +68,8 @@
             border: 1px solid var(--card-border);
             transition: background 0.3s;
         }
-
-        .checkbox-row label:hover {
-            background: rgba(255, 255, 255, 0.18);
-        }
-
-        .checkbox-row input[type="checkbox"] {
-            accent-color: var(--primary);
-            width: 16px;
-            height: 16px;
-        }
-
+        .checkbox-row label:hover { background: rgba(255, 255, 255, 0.18); }
+        .checkbox-row input[type="checkbox"] { accent-color: var(--primary); width: 16px; height: 16px; }
         .btn {
             padding: 13px 26px;
             border-radius: 50px;
@@ -124,31 +82,14 @@
             transition: background 0.3s, transform 0.3s;
             font-family: inherit;
         }
-
-        .btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .btn:active {
-            transform: scale(0.97);
-        }
-
+        .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn:active { transform: scale(0.97); }
         .btn-secondary {
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid var(--card-border);
         }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.28);
-        }
-
-        .btn-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.28); }
+        .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
         .result-box {
             margin-top: 18px;
             padding: 18px;
@@ -166,7 +107,6 @@
             justify-content: center;
             user-select: all;
         }
-
         .copy-msg {
             font-size: 13px;
             color: var(--primary-light);
@@ -175,12 +115,7 @@
             opacity: 0;
             transition: opacity 0.3s;
         }
-
-        .copy-msg.show {
-            opacity: 1;
-        }
-
-        /* Калькулятор */
+        .copy-msg.show { opacity: 1; }
         .calc-display {
             background: rgba(0, 0, 0, 0.2);
             border-radius: 15px;
@@ -189,27 +124,9 @@
             margin-bottom: 15px;
             min-height: 80px;
         }
-
-        .calc-expression {
-            font-size: 14px;
-            color: var(--text-dim);
-            min-height: 20px;
-            word-break: break-all;
-        }
-
-        .calc-result {
-            font-size: 32px;
-            font-weight: 700;
-            word-break: break-all;
-            margin-top: 5px;
-        }
-
-        .calc-buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
+        .calc-expression { font-size: 14px; color: var(--text-dim); min-height: 20px; word-break: break-all; }
+        .calc-result { font-size: 32px; font-weight: 700; word-break: break-all; margin-top: 5px; }
+        .calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .calc-btn {
             padding: 18px;
             border-radius: 15px;
@@ -222,40 +139,14 @@
             transition: background 0.2s, transform 0.1s;
             font-family: inherit;
         }
-
-        .calc-btn:hover {
-            background: rgba(255, 255, 255, 0.22);
-        }
-
-        .calc-btn:active {
-            transform: scale(0.95);
-        }
-
-        .calc-btn.op {
-            background: rgba(255, 140, 0, 0.4);
-        }
-
-        .calc-btn.op:hover {
-            background: rgba(255, 140, 0, 0.6);
-        }
-
-        .calc-btn.equals {
-            background: var(--primary);
-            grid-column: span 2;
-        }
-
-        .calc-btn.equals:hover {
-            background: var(--primary-dark);
-        }
-
-        .calc-btn.clear {
-            background: rgba(255, 60, 60, 0.5);
-        }
-
-        .calc-btn.clear:hover {
-            background: rgba(255, 60, 60, 0.7);
-        }
-
+        .calc-btn:hover { background: rgba(255, 255, 255, 0.22); }
+        .calc-btn:active { transform: scale(0.95); }
+        .calc-btn.op { background: rgba(255, 140, 0, 0.4); }
+        .calc-btn.op:hover { background: rgba(255, 140, 0, 0.6); }
+        .calc-btn.equals { background: var(--primary); grid-column: span 2; }
+        .calc-btn.equals:hover { background: var(--primary-dark); }
+        .calc-btn.clear { background: rgba(255, 60, 60, 0.5); }
+        .calc-btn.clear:hover { background: rgba(255, 60, 60, 0.7); }
         @media (max-width: 600px) {
             .tool-section { padding: 18px; }
             .tool-section h2 { font-size: 18px; }
@@ -267,22 +158,35 @@
     </style>
 </head>
 <body>
-    <!-- Шапка -->
+    <div class="aquarium">
+        <div class="fish">🐠</div>
+        <div class="fish">🐟</div>
+        <div class="fish">🐡</div>
+        <div class="fish">🦈</div>
+        <div class="fish">🐠</div>
+        <div class="fish">🐟</div>
+        <div class="bubble-fish"></div>
+        <div class="bubble-fish"></div>
+        <div class="bubble-fish"></div>
+        <div class="bubble-fish"></div>
+        <div class="bubble-fish"></div>
+        <div class="bubble-fish"></div>
+    </div>
+
     <header class="header">
         <a href="index.html" class="logo">Ki<span>.</span>Tools</a>
         <nav class="nav">
             <a href="tools.html">🛠️ Инструменты</a>
             <a href="game.html">🎮 Игры</a>
+            <a href="site.html">📖 О проекте</a>
             <button class="settings-btn" onclick="openSettings()">⚙️</button>
         </nav>
     </header>
 
     <div class="container">
 
-        <!-- ===== ГЕНЕРАТОР ПАРОЛЕЙ ===== -->
         <div class="tool-section">
             <h2>🔐 Генератор паролей</h2>
-
             <div class="field">
                 <label>Длина пароля</label>
                 <div class="range-row">
@@ -290,32 +194,26 @@
                     <span class="range-value" id="lengthValue">16</span>
                 </div>
             </div>
-
             <div class="checkbox-row">
                 <label><input type="checkbox" id="useUpper" checked> A-Z</label>
                 <label><input type="checkbox" id="useLower" checked> a-z</label>
                 <label><input type="checkbox" id="useDigits" checked> 0-9</label>
                 <label><input type="checkbox" id="useSymbols" checked> !@#</label>
             </div>
-
             <div class="btn-row">
                 <button class="btn" onclick="generatePassword()">🎲 Сгенерировать</button>
                 <button class="btn btn-secondary" onclick="copyPassword()">📋 Копировать</button>
             </div>
-
             <div class="result-box" id="passwordResult">Нажми «Сгенерировать»</div>
             <div class="copy-msg" id="copyMsg">✅ Пароль скопирован!</div>
         </div>
 
-        <!-- ===== КАЛЬКУЛЯТОР ===== -->
         <div class="tool-section">
             <h2>🧮 Калькулятор</h2>
-
             <div class="calc-display">
                 <div class="calc-expression" id="calcExpression"></div>
                 <div class="calc-result" id="calcResult">0</div>
             </div>
-
             <div class="calc-buttons">
                 <button class="calc-btn clear" onclick="calcClear()">C</button>
                 <button class="calc-btn op" onclick="calcInput('/')">÷</button>
@@ -342,7 +240,6 @@
             </div>
         </div>
 
-        <!-- ===== КОНВЕРТЕР (заглушка) ===== -->
         <div class="tool-section">
             <h2>🔄 Конвертер единиц</h2>
             <p style="color: var(--text-dim); font-size: 14px;">Скоро: длина, вес, температура.</p>
@@ -351,10 +248,9 @@
     </div>
 
     <footer class="footer">
-        <p>© 2026 Ki Tools · Сделано с 🍊</p>
+        <p>© 2026 Ki Tools · От <strong>DONATE BOUSE STUDIO</strong> · Сделано с 🍊</p>
     </footer>
 
-    <!-- Модальное окно настроек -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal">
             <h2>🎨 Выбери тему</h2>
@@ -364,13 +260,13 @@
                 <div class="theme-option theme-light" onclick="setTheme('light')">Светлая</div>
                 <div class="theme-option theme-blue" onclick="setTheme('blue')">Синяя</div>
                 <div class="theme-option theme-green" onclick="setTheme('green')">Зелёная</div>
+                <div class="theme-option theme-fish" onclick="setTheme('fish')">🐠 Рыбки</div>
             </div>
             <button class="close-btn" onclick="closeSettings()">Готово</button>
         </div>
     </div>
 
     <script>
-        // ===== ТЕМА =====
         const savedTheme = localStorage.getItem('ki-theme') || 'orange';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
@@ -383,23 +279,17 @@
                 }
             });
         }
-
-        function closeSettings() {
-            document.getElementById('settingsModal').classList.remove('active');
-        }
-
+        function closeSettings() { document.getElementById('settingsModal').classList.remove('active'); }
         function setTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('ki-theme', theme);
             document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
             event.target.classList.add('active');
         }
-
         document.getElementById('settingsModal').addEventListener('click', function(e) {
             if (e.target === this) closeSettings();
         });
 
-        // ===== ГЕНЕРАТОР ПАРОЛЕЙ =====
         function updateLength() {
             document.getElementById('lengthValue').textContent = document.getElementById('passLength').value;
         }
@@ -436,7 +326,6 @@
         function copyPassword() {
             const text = document.getElementById('passwordResult').textContent;
             if (text === 'Нажми «Сгенерировать»' || text.includes('Выбери хотя бы')) return;
-
             navigator.clipboard.writeText(text).then(() => {
                 const msg = document.getElementById('copyMsg');
                 msg.classList.add('show');
@@ -444,37 +333,22 @@
             });
         }
 
-        // ===== КАЛЬКУЛЯТОР =====
         let calcExpr = '';
-
-        function calcInput(val) {
-            calcExpr += val;
-            updateCalcDisplay();
-        }
-
+        function calcInput(val) { calcExpr += val; updateCalcDisplay(); }
         function calcClear() {
             calcExpr = '';
             document.getElementById('calcResult').textContent = '0';
             document.getElementById('calcExpression').textContent = '';
         }
-
-        function calcBackspace() {
-            calcExpr = calcExpr.slice(0, -1);
-            updateCalcDisplay();
-        }
-
+        function calcBackspace() { calcExpr = calcExpr.slice(0, -1); updateCalcDisplay(); }
         function updateCalcDisplay() {
             document.getElementById('calcExpression').textContent = calcExpr;
             document.getElementById('calcResult').textContent = calcExpr || '0';
         }
-
         function calcEquals() {
             if (calcExpr === '') return;
             try {
-                // Безопасное вычисление: только цифры и операторы
-                if (!/^[0-9+\-*/.() ]+$/.test(calcExpr)) {
-                    throw new Error('bad');
-                }
+                if (!/^[0-9+\-*/.() ]+$/.test(calcExpr)) throw new Error('bad');
                 const result = Function('"use strict"; return (' + calcExpr + ')')();
                 if (!isFinite(result)) throw new Error('bad');
                 document.getElementById('calcExpression').textContent = calcExpr + ' =';
@@ -486,7 +360,6 @@
             }
         }
 
-        // Поддержка клавиатуры
         document.addEventListener('keydown', (e) => {
             if (e.key >= '0' && e.key <= '9') calcInput(e.key);
             else if (['+', '-', '*', '/', '.', '(', ')'].includes(e.key)) calcInput(e.key);
