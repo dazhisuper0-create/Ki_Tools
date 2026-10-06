@@ -50,9 +50,28 @@
         }
 
         .install-btn.show { display: inline-block; }
+
+        /* Чтобы контент был над рыбками */
+        .header, .container, .footer { position: relative; z-index: 1; }
     </style>
 </head>
 <body>
+    <!-- Аквариум (виден только в теме «Рыбки») -->
+    <div class="aquarium">
+        <div class="fish">🐠</div>
+        <div class="fish">🐟</div>
+        <div class="fish">🐡</div>
+        <div class="fish">🦈</div>
+        <div class="fish">🐠</div>
+        <div class="fish">🐟</div>
+        <div class="bubble-fish"></div>
+        <div class="bubble-fish"></div>
+        <div class="bubble-fish"></div>
+        <div class="bubble-fish"></div>
+        <div class="bubble-fish"></div>
+        <div class="bubble-fish"></div>
+    </div>
+
     <header class="header">
         <a href="index.html" class="logo">Ki<span>.</span>Tools</a>
         <nav class="nav">
@@ -119,6 +138,7 @@
                 <div class="theme-option theme-light" onclick="setTheme('light')">Светлая</div>
                 <div class="theme-option theme-blue" onclick="setTheme('blue')">Синяя</div>
                 <div class="theme-option theme-green" onclick="setTheme('green')">Зелёная</div>
+                <div class="theme-option theme-fish" onclick="setTheme('fish')">🐠 Рыбки</div>
             </div>
             <button class="close-btn" onclick="closeSettings()">Готово</button>
         </div>
@@ -177,7 +197,7 @@
             installBtn.classList.remove('show');
         });
 
-        // Регистрация service worker (для PWA)
+        // Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
