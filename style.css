@@ -378,3 +378,16 @@ body {
     .grid { grid-template-columns: 1fr; }
     .logo { font-size: 20px; }
 }
+/* Тема «Рыбки» */
+[data-theme="fish"] {
+    --primary: #00BCD4;
+    --primary-dark: #0097A7;
+    --primary-light: #4DD0E1;
+    --bg: linear-gradient(180deg, #006064 0%, #00838F 30%, #00ACC1 70%, #26C6DA 100%);
+    --card-bg: rgba(255, 255, 255, 0.12);
+    --card-border: rgba(255, 255, 255, 0.25);
+    --text: #FFFFFF;
+    --text-dim: rgba(255, 255, 255, 0.75);
+    --shadow: rgba(0, 0, 0, 0.3);
+    --accent: #00E5FF;
+}
