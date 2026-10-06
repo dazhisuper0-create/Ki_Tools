@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ki Browser — Проект в разработке</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #FF8C00 0%, #FF6B00 50%, #E85D00 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 8s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Плавающие пузыри на фоне */
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            animation: float 15s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        .bubble:nth-child(1) {
+            width: 300px; height: 300px;
+            top: -100px; left: -100px;
+            animation-delay: 0s;
+        }
+
+        .bubble:nth-child(2) {
+            width: 200px; height: 200px;
+            bottom: -80px; right: -80px;
+            animation-delay: 3s;
+        }
+
+        .bubble:nth-child(3) {
+            width: 150px; height: 150px;
+            top: 50%; right: 10%;
+            animation-delay: 6s;
+        }
+
+        .bubble:nth-child(4) {
+            width: 100px; height: 100px;
+            bottom: 20%; left: 15%;
+            animation-delay: 9s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -40px) scale(1.1); }
+            66% { transform: translate(-20px, 30px) scale(0.95); }
+        }
+
+        .container {
+            max-width: 600px;
+            animation: fadeIn 1.2s ease-out;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            font-size: 90px;
+            font-weight: 900;
+            letter-spacing: -4px;
+            margin-bottom: 5px;
+            text-shadow: 0 6px 30px rgba(0,0,0,0.25);
+            animation: logoPulse 3s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        .logo span {
+            color: #2D1B00;
+        }
+
+        .browser-word {
+            font-size: 28px;
+            font-weight: 300;
+            letter-spacing: 12px;
+            text-transform: uppercase;
+            opacity: 0.95;
+            margin-bottom: 30px;
+            animation: slideDown 1s ease-out 0.3s both;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 0.95; transform: translateY(0); }
+        }
+
+        .tagline {
+            font-size: 20px;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            font-weight: 300;
+            animation: slideDown 1s ease-out 0.5s both;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 40px;
+            border: 2px solid rgba(255,255,255,0.3);
+            animation: slideDown 1s ease-out 0.7s both, badgeGlow 2.5s ease-in-out infinite;
+        }
+
+        @keyframes badgeGlow {
+            0%, 100% { box-shadow: 0 0 0 rgba(255,255,255,0); }
+            50% { box-shadow: 0 0 25px rgba(255,255,255,0.4); }
+        }
+
+        .badge::before {
+            content: '⚙️ ';
+            display: inline-block;
+            animation: spin 3s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .feature {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-size: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+            animation: popIn 0.6s ease-out both;
+        }
+
+        .feature:nth-child(1) { animation-delay: 0.9s; }
+        .feature:nth-child(2) { animation-delay: 1.05s; }
+        .feature:nth-child(3) { animation-delay: 1.2s; }
+        .feature:nth-child(4) { animation-delay: 1.35s; }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .feature:hover {
+            transform: translateY(-5px) scale(1.05);
+            background: rgba(255,255,255,0.28);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .footer {
+            font-size: 14px;
+            opacity: 0.75;
+            margin-top: 20px;
+            animation: slideDown 1s ease-out 1.5s both;
+        }
+
+        .footer a {
+            color: #fff;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255,255,255,0.5);
+            transition: border-color 0.3s, opacity 0.3s;
+        }
+
+        .footer a:hover {
+            border-bottom-color: #fff;
+            opacity: 1;
+        }
+
+        /* Адаптив для телефонов */
+        @media (max-width: 600px) {
+            .logo { font-size: 65px; }
+            .browser-word { font-size: 20px; letter-spacing: 8px; }
+            .tagline { font-size: 17px; }
+            .feature { font-size: 13px; padding: 12px 18px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Плавающие пузыри -->
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+
+    <div class="container">
+        <div class="logo">Ki<span>.</span></div>
+        <div class="browser-word">Browser</div>
+        <p class="tagline">Браузер, который мы делаем вместе</p>
+
+        <div class="badge">Проект в разработке</div>
+
+        <div class="features">
+            <div class="feature">🎨 Оранжевая тема</div>
+            <div class="feature">🔍 Выбор поисковика</div>
+            <div class="feature">🔐 Сохранение паролей</div>
+            <div class="feature">📱 Android</div>
+        </div>
+
+        <p class="footer">
+            Следить за проектом на <a href="https://github.com">GitHub</a>
+        </p>
+    </div>
+</body>
+</html>
