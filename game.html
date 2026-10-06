@@ -246,6 +246,46 @@
 
             <p class="hint">Стрелки на клавиатуре · Свайпы на поле · Кнопки ниже</p>
         </div>
+             <div class="game-section">
+            <h2>🔢 2048</h2>
+
+            <div class="score-row">
+                <div class="score-box">
+                    <div class="score-label">Счёт</div>
+                    <div class="score-value" id="g2048Score">0</div>
+                </div>
+                <div class="score-box">
+                    <div class="score-label">Рекорд</div>
+                    <div class="score-value" id="g2048Best">0</div>
+                </div>
+            </div>
+
+            <div class="canvas-wrap">
+                <div id="g2048Board" style="
+                    display: grid;
+                    grid-template-columns: repeat(4, 80px);
+                    grid-template-rows: repeat(4, 80px);
+                    gap: 10px;
+                    background: rgba(0,0,0,0.25);
+                    padding: 10px;
+                    border-radius: 18px;
+                    border: 2px solid var(--card-border);
+                    touch-action: none;
+                    user-select: none;
+                "></div>
+
+                <div class="overlay" id="g2048Overlay">
+                    <h3 id="g2048OverTitle">🔢 2048</h3>
+                    <p id="g2048OverText">Соединяй плитки, чтобы получить 2048</p>
+                    <button class="btn" onclick="start2048()">▶ Начать игру</button>
+                </div>
+
+            <div class="btn-row">
+                <button class="btn btn-secondary" onclick="start2048()">🔄 Заново</button>
+            </div>
+
+            <p class="hint">Стрелки на клавиатуре · Свайпы на поле</p>
+        </div>   
     </div>
 
     <footer class="footer">
@@ -524,7 +564,201 @@
                 changeDir(0, dy > 0 ? 1 : -1);
             }
         }, {passive: true});
+        // ===== 2048 =====
+        let g2048Board = [];
+        let g2048Score = 0;
+        let g2048Best = parseInt(localStorage.getItem('ki-2048-best') || '0');
+        let g2048Running = false;
 
+        document.getElementById('g2048Best').textContent = g2048Best;
+
+        // Цвета плиток
+        const TILE_COLORS = {
+            2:    { bg: '#EEE4DA', color: '#776E65' },
+            4:    { bg: '#EDE0C8', color: '#776E65' },
+            8:    { bg: '#F2B179', color: '#FFFFFF' },
+            16:   { bg: '#F59563', color: '#FFFFFF' },
+            32:   { bg: '#F67C5F', color: '#FFFFFF' },
+            64:   { bg: '#F65E3B', color: '#FFFFFF' },
+            128:  { bg: '#EDCF72', color: '#FFFFFF' },
+            256:  { bg: '#EDCC61', color: '#FFFFFF' },
+            512:  { bg: '#EDC850', color: '#FFFFFF' },
+            1024: { bg: '#EDC53F', color: '#FFFFFF' },
+            2048: { bg: '#EDC22E', color: '#FFFFFF' }
+        };
+
+        function getTileColor(value) {
+            return TILE_COLORS[value] || { bg: '#3C3A32', color: '#FFFFFF' };
+        }
+
+        function init2048() {
+            g2048Board = [
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0]
+            ];
+            g2048Score = 0;
+            document.getElementById('g2048Score').textContent = '0';
+            addRandomTile();
+            addRandomTile();
+            render2048();
+        }
+
+        function addRandomTile() {
+            const empty = [];
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 4; c++) {
+                    if (g2048Board[r][c] === 0) empty.push({r, c});
+                }
+            }
+            if (empty.length === 0) return;
+            const spot = empty[Math.floor(Math.random() * empty.length)];
+            g2048Board[spot.r][spot.c] = Math.random() < 0.9 ? 2 : 4;
+        }
+
+        function render2048() {
+            const boardEl = document.getElementById('g2048Board');
+            boardEl.innerHTML = '';
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 4; c++) {
+                    const val = g2048Board[r][c];
+                    const tile = document.createElement('div');
+                    const colors = getTileColor(val);
+                    tile.style.cssText = `
+                        background: ${val === 0 ? 'rgba(255,255,255,0.05)' : colors.bg};
+                        color: ${colors.color};
+                        border-radius: 12px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: ${val >= 1000 ? '24px' : val >= 100 ? '28px' : '32px'};
+                        font-weight: 900;
+                        transition: all 0.15s ease;
+                        font-family: inherit;
+                    `;
+                    tile.textContent = val === 0 ? '' : val;
+                    boardEl.appendChild(tile);
+                }
+            }
+        }
+
+        function move2048(direction) {
+            if (!g2048Running) return;
+
+            const oldBoard = JSON.stringify(g2048Board);
+            let moved = false;
+
+            const rotate = (board) => board[0].map((_, i) => board.map(row => row[i]).reverse());
+
+            let board = g2048Board.map(row => [...row]);
+
+            // Поворачиваем так, чтобы движение было всегда "влево"
+            const rotations = { left: 0, up: 1, right: 2, down: 3 };
+            for (let i = 0; i < rotations[direction]; i++) {
+                board = rotate(board);
+            }
+
+            // Сдвигаем и сливаем
+            for (let r = 0; r < 4; r++) {
+                let row = board[r].filter(v => v !== 0);
+                for (let i = 0; i < row.length - 1; i++) {
+                    if (row[i] === row[i + 1]) {
+                        row[i] *= 2;
+                        g2048Score += row[i];
+                        row[i + 1] = 0;
+                    }
+                }
+                row = row.filter(v => v !== 0);
+                while (row.length < 4) row.push(0);
+                board[r] = row;
+            }
+
+            // Обратно поворачиваем
+            for (let i = 0; i < (4 - rotations[direction]) % 4; i++) {
+                board = rotate(board);
+            }
+
+            if (JSON.stringify(board) !== oldBoard) {
+                g2048Board = board;
+                addRandomTile();
+                moved = true;
+            }
+
+            if (moved) {
+                document.getElementById('g2048Score').textContent = g2048Score;
+                render2048();
+                check2048GameOver();
+            }
+        }
+
+        function check2048GameOver() {
+            // Есть пустые клетки?
+            for (let r = 0; r < 4; r++)
+                for (let c = 0; c < 4; c++)
+                    if (g2048Board[r][c] === 0) return;
+
+            // Есть соседние одинаковые?
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 4; c++) {
+                    if (c < 3 && g2048Board[r][c] === g2048Board[r][c + 1]) return;
+                    if (r < 3 && g2048Board[r][c] === g2048Board[r + 1][c]) return;
+                }
+            }
+
+            // Игра окончена
+            g2048Running = false;
+            if (g2048Score > g2048Best) {
+                g2048Best = g2048Score;
+                localStorage.setItem('ki-2048-best', g2048Best);
+                document.getElementById('g2048Best').textContent = g2048Best;
+            }
+            document.getElementById('g2048OverTitle').textContent = '💀 Игра окончена';
+            document.getElementById('g2048OverText').textContent = 'Твой счёт: ' + g2048Score;
+            document.getElementById('g2048Overlay').classList.add('active');
+        }
+
+        function start2048() {
+            document.getElementById('g2048Overlay').classList.remove('active');
+            g2048Running = true;
+            init2048();
+        }
+
+        // Управление 2048
+        document.addEventListener('keydown', (e) => {
+            if (!g2048Running) return;
+            const map = {
+                'ArrowUp': 'up', 'ArrowDown': 'down',
+                'ArrowLeft': 'left', 'ArrowRight': 'right'
+            };
+            if (map[e.key]) {
+                e.preventDefault();
+                move2048(map[e.key]);
+            }
+        });
+
+        // Свайпы для 2048
+        const board2048El = document.getElementById('g2048Board');
+        let t2048X = 0, t2048Y = 0;
+
+        board2048El.addEventListener('touchstart', (e) => {
+            t2048X = e.touches[0].clientX;
+            t2048Y = e.touches[0].clientY;
+        }, {passive: true});
+
+        board2048El.addEventListener('touchend', (e) => {
+            const dx = e.changedTouches[0].clientX - t2048X;
+            const dy = e.changedTouches[0].clientY - t2048Y;
+            if (Math.abs(dx) < 30 && Math.abs(dy) < 30) return;
+            if (Math.abs(dx) > Math.abs(dy)) {
+                move2048(dx > 0 ? 'right' : 'left');
+            } else {
+                move2048(dy > 0 ? 'down' : 'up');
+            }
+        }, {passive: true});
+
+        // Инициализация 2048
+        init2048();
         // Инициализация
         resetGame();
     </script>
