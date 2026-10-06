@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Игры — Ki Tools</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF8C00">
     <link rel="stylesheet" href="style.css">
     <style>
         .game-section {
@@ -16,7 +18,6 @@
             margin-bottom: 25px;
             animation: popIn 0.6s ease-out both;
         }
-
         .game-section h2 {
             font-size: 22px;
             margin-bottom: 18px;
@@ -24,7 +25,6 @@
             align-items: center;
             gap: 10px;
         }
-
         .score-row {
             display: flex;
             justify-content: space-between;
@@ -32,7 +32,6 @@
             margin-bottom: 18px;
             flex-wrap: wrap;
         }
-
         .score-box {
             flex: 1;
             min-width: 100px;
@@ -42,7 +41,6 @@
             padding: 12px 18px;
             text-align: center;
         }
-
         .score-label {
             font-size: 12px;
             color: var(--text-dim);
@@ -50,19 +48,13 @@
             letter-spacing: 1px;
             margin-bottom: 4px;
         }
-
-        .score-value {
-            font-size: 26px;
-            font-weight: 900;
-        }
-
+        .score-value { font-size: 26px; font-weight: 900; }
         .canvas-wrap {
             display: flex;
             justify-content: center;
             margin-bottom: 18px;
             position: relative;
         }
-
         #gameCanvas {
             background: rgba(0, 0, 0, 0.25);
             border: 2px solid var(--card-border);
@@ -72,7 +64,6 @@
             touch-action: none;
             display: block;
         }
-
         .overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -86,20 +77,9 @@
             padding: 20px;
             z-index: 10;
         }
-
         .overlay.active { display: flex; }
-
-        .overlay h3 {
-            font-size: 26px;
-            margin-bottom: 10px;
-        }
-
-        .overlay p {
-            font-size: 15px;
-            color: var(--text-dim);
-            margin-bottom: 18px;
-        }
-
+        .overlay h3 { font-size: 26px; margin-bottom: 10px; }
+        .overlay p { font-size: 15px; color: var(--text-dim); margin-bottom: 18px; }
         .btn {
             padding: 13px 26px;
             border-radius: 50px;
@@ -112,30 +92,19 @@
             transition: background 0.3s, transform 0.3s;
             font-family: inherit;
         }
-
-        .btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
+        .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
         .btn:active { transform: scale(0.97); }
-
         .btn-secondary {
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid var(--card-border);
         }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.28);
-        }
-
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.28); }
         .btn-row {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
             justify-content: center;
         }
-
         .dpad {
             display: grid;
             grid-template-columns: repeat(3, 60px);
@@ -144,7 +113,6 @@
             justify-content: center;
             margin-top: 15px;
         }
-
         .dpad button {
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid var(--card-border);
@@ -154,22 +122,18 @@
             cursor: pointer;
             transition: background 0.2s, transform 0.1s;
         }
-
         .dpad button:hover { background: rgba(255, 255, 255, 0.28); }
         .dpad button:active { transform: scale(0.92); }
-
         .dpad .up { grid-column: 2; grid-row: 1; }
         .dpad .left { grid-column: 1; grid-row: 2; }
         .dpad .down { grid-column: 2; grid-row: 2; }
         .dpad .right { grid-column: 3; grid-row: 2; }
-
         .hint {
             text-align: center;
             font-size: 13px;
             color: var(--text-dim);
             margin-top: 12px;
         }
-
         @media (max-width: 600px) {
             .game-section { padding: 18px; }
             .game-section h2 { font-size: 18px; }
@@ -178,7 +142,7 @@
             .dpad { grid-template-columns: repeat(3, 55px); grid-template-rows: repeat(2, 55px); }
         }
     </style>
-    </head>
+</head>
 <body>
     <div class="aquarium">
         <div class="fish">🐠</div>
@@ -196,7 +160,6 @@
     </div>
 
     <header class="header">
-    <header class="header">
         <a href="index.html" class="logo">Ki<span>.</span>Tools</a>
         <nav class="nav">
             <a href="tools.html">🛠️ Инструменты</a>
@@ -208,10 +171,9 @@
 
     <div class="container">
 
-        <!-- ===== ЗМЕЙКА ===== -->
+        <!-- ЗМЕЙКА -->
         <div class="game-section">
             <h2>🐍 Змейка</h2>
-
             <div class="score-row">
                 <div class="score-box">
                     <div class="score-label">Счёт</div>
@@ -222,48 +184,40 @@
                     <div class="score-value" id="best">0</div>
                 </div>
             </div>
-
             <div class="canvas-wrap">
                 <canvas id="gameCanvas" width="400" height="400"></canvas>
-
                 <div class="overlay active" id="startOverlay">
                     <h3>🐍 Змейка</h3>
                     <p>WASD · Стрелки · Свайпы · Кнопки</p>
                     <button class="btn" onclick="startGame()">▶ Начать игру</button>
                 </div>
-
                 <div class="overlay" id="gameOverOverlay">
                     <h3>💀 Игра окончена</h3>
                     <p id="gameOverText">Твой счёт: 0</p>
                     <button class="btn" onclick="startGame()">🔄 Заново</button>
                 </div>
-
                 <div class="overlay" id="pauseOverlay">
                     <h3>⏸ Пауза</h3>
                     <p>Нажми, чтобы продолжить</p>
                     <button class="btn" onclick="togglePause()">▶ Продолжить</button>
                 </div>
             </div>
-
             <div class="btn-row">
                 <button class="btn btn-secondary" onclick="togglePause()">⏸ Пауза</button>
                 <button class="btn btn-secondary" onclick="startGame()">🔄 Заново</button>
             </div>
-
             <div class="dpad">
                 <button class="up" ontouchstart="changeDir(0,-1)" onclick="changeDir(0,-1)">▲</button>
                 <button class="left" ontouchstart="changeDir(-1,0)" onclick="changeDir(-1,0)">◀</button>
                 <button class="down" ontouchstart="changeDir(0,1)" onclick="changeDir(0,1)">▼</button>
                 <button class="right" ontouchstart="changeDir(1,0)" onclick="changeDir(1,0)">▶</button>
             </div>
-
             <p class="hint">WASD или стрелки · Свайпы по полю · Кнопки ниже</p>
         </div>
 
-        <!-- ===== 2048 ===== -->
+        <!-- 2048 -->
         <div class="game-section">
             <h2>🔢 2048</h2>
-
             <div class="score-row">
                 <div class="score-box">
                     <div class="score-label">Счёт</div>
@@ -274,7 +228,6 @@
                     <div class="score-value" id="g2048Best">0</div>
                 </div>
             </div>
-
             <div class="canvas-wrap">
                 <div id="g2048Board" style="
                     display: grid;
@@ -288,25 +241,21 @@
                     touch-action: none;
                     user-select: none;
                 "></div>
-
                 <div class="overlay active" id="g2048Overlay">
                     <h3 id="g2048OverTitle">🔢 2048</h3>
                     <p id="g2048OverText">Соединяй плитки, чтобы получить 2048</p>
                     <button class="btn" onclick="start2048()">▶ Начать игру</button>
                 </div>
             </div>
-
             <div class="btn-row">
                 <button class="btn btn-secondary" onclick="start2048()">🔄 Заново</button>
             </div>
-
             <p class="hint">Стрелки на клавиатуре · Свайпы на поле</p>
         </div>
 
-        <!-- ===== КРЕСТИКИ-НОЛИКИ ===== -->
+        <!-- КРЕСТИКИ-НОЛИКИ -->
         <div class="game-section">
             <h2>❌⭕ Крестики-нолики</h2>
-
             <div class="score-row">
                 <div class="score-box">
                     <div class="score-label">Победы</div>
@@ -321,7 +270,6 @@
                     <div class="score-value" id="tttLosses">0</div>
                 </div>
             </div>
-
             <div class="canvas-wrap">
                 <div id="tttBoard" style="
                     display: grid;
@@ -334,25 +282,22 @@
                     border: 2px solid var(--card-border);
                     user-select: none;
                 "></div>
-
                 <div class="overlay active" id="tttOverlay">
                     <h3 id="tttOverTitle">❌⭕ Крестики-нолики</h3>
                     <p id="tttOverText">Ты играешь за ❌. Собери три в ряд!</p>
                     <button class="btn" onclick="startTTT()">▶ Начать игру</button>
                 </div>
             </div>
-
             <div class="btn-row">
                 <button class="btn btn-secondary" onclick="startTTT()">🔄 Заново</button>
             </div>
-
             <p class="hint">Тапни по клетке, чтобы поставить ❌</p>
         </div>
 
     </div>
 
     <footer class="footer">
-        <p>© 2026 Ki Tools · Сделано с 🍊</p>
+        <p>© 2026 Ki Tools · От <strong>DONATE BOUSE STUDIO</strong> · Сделано с 🍊</p>
     </footer>
 
     <div class="modal-overlay" id="settingsModal">
@@ -371,10 +316,9 @@
     </div>
 
     <script>
-        // ===== ТЕМА =====
+        // ТЕМА
         const savedTheme = localStorage.getItem('ki-theme') || 'orange';
         document.documentElement.setAttribute('data-theme', savedTheme);
-
         function openSettings() {
             document.getElementById('settingsModal').classList.add('active');
             document.querySelectorAll('.theme-option').forEach(opt => {
@@ -395,18 +339,16 @@
             if (e.target === this) closeSettings();
         });
 
-        // ===== ЗМЕЙКА =====
+        // ЗМЕЙКА
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const CELL = 20;
         const COLS = canvas.width / CELL;
         const ROWS = canvas.height / CELL;
-
         let snake, dir, nextDir, food, score, best, speed, gameLoop, paused, running;
         best = parseInt(localStorage.getItem('ki-snake-best') || '0');
         document.getElementById('best').textContent = best;
 
-        // Полифилл roundRect
         if (!CanvasRenderingContext2D.prototype.roundRect) {
             CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
                 if (w < 2 * r) r = w / 2;
@@ -434,56 +376,34 @@
             document.getElementById('score').textContent = '0';
             draw();
         }
-
         function placeFood() {
             let newFood;
             do {
-                newFood = {
-                    x: Math.floor(Math.random() * COLS),
-                    y: Math.floor(Math.random() * ROWS)
-                };
+                newFood = {x: Math.floor(Math.random() * COLS), y: Math.floor(Math.random() * ROWS)};
             } while (snake.some(s => s.x === newFood.x && s.y === newFood.y));
             food = newFood;
         }
-
         function draw() {
             ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
             ctx.lineWidth = 1;
-            for (let i = 0; i <= COLS; i++) {
-                ctx.beginPath();
-                ctx.moveTo(i * CELL, 0);
-                ctx.lineTo(i * CELL, canvas.height);
-                ctx.stroke();
-            }
-            for (let i = 0; i <= ROWS; i++) {
-                ctx.beginPath();
-                ctx.moveTo(0, i * CELL);
-                ctx.lineTo(canvas.width, i * CELL);
-                ctx.stroke();
-            }
-
-            // Еда
+            for (let i = 0; i <= COLS; i++) { ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, canvas.height); ctx.stroke(); }
+            for (let i = 0; i <= ROWS; i++) { ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(canvas.width, i * CELL); ctx.stroke(); }
             ctx.fillStyle = '#FF3B30';
             ctx.beginPath();
             ctx.arc(food.x * CELL + CELL/2, food.y * CELL + CELL/2, CELL/2 - 2, 0, Math.PI * 2);
             ctx.fill();
-
             ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
             ctx.beginPath();
             ctx.arc(food.x * CELL + CELL/2 - 3, food.y * CELL + CELL/2 - 3, 2, 0, Math.PI * 2);
             ctx.fill();
-
-            // Змейка
             snake.forEach((seg, i) => {
                 const isHead = i === 0;
                 ctx.fillStyle = isHead ? '#FF8C00' : '#E85D00';
                 ctx.beginPath();
                 ctx.roundRect(seg.x * CELL + 2, seg.y * CELL + 2, CELL - 4, CELL - 4, isHead ? 7 : 5);
                 ctx.fill();
-
                 if (isHead) {
                     ctx.fillStyle = '#fff';
                     let ex1, ey1, ex2, ey2;
@@ -491,45 +411,29 @@
                     else if (dir.x === -1) { ex1 = 7; ey1 = 7; ex2 = 7; ey2 = 13; }
                     else if (dir.y === 1) { ex1 = 7; ey1 = 13; ex2 = 13; ey2 = 13; }
                     else { ex1 = 7; ey1 = 7; ex2 = 13; ey2 = 7; }
-
-                    ctx.beginPath();
-                    ctx.arc(seg.x * CELL + ex1, seg.y * CELL + ey1, 3, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.arc(seg.x * CELL + ex2, seg.y * CELL + ey2, 3, 0, Math.PI * 2);
-                    ctx.fill();
-
+                    ctx.beginPath(); ctx.arc(seg.x * CELL + ex1, seg.y * CELL + ey1, 3, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(seg.x * CELL + ex2, seg.y * CELL + ey2, 3, 0, Math.PI * 2); ctx.fill();
                     ctx.fillStyle = '#000';
-                    ctx.beginPath();
-                    ctx.arc(seg.x * CELL + ex1 + dir.x, seg.y * CELL + ey1 + dir.y, 1.5, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.arc(seg.x * CELL + ex2 + dir.x, seg.y * CELL + ey2 + dir.y, 1.5, 0, Math.PI * 2);
-                    ctx.fill();
+                    ctx.beginPath(); ctx.arc(seg.x * CELL + ex1 + dir.x, seg.y * CELL + ey1 + dir.y, 1.5, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(seg.x * CELL + ex2 + dir.x, seg.y * CELL + ey2 + dir.y, 1.5, 0, Math.PI * 2); ctx.fill();
                 }
             });
         }
-
         function step() {
             if (paused) return;
             dir = nextDir;
             const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
-
             if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) return gameOver();
             if (snake.some(s => s.x === head.x && s.y === head.y)) return gameOver();
-
             snake.unshift(head);
             if (head.x === food.x && head.y === food.y) {
                 score += 10;
                 document.getElementById('score').textContent = score;
                 placeFood();
                 if (speed > 60) speed -= 3;
-            } else {
-                snake.pop();
-            }
+            } else { snake.pop(); }
             draw();
         }
-
         function gameOver() {
             running = false;
             clearInterval(gameLoop);
@@ -541,7 +445,6 @@
             document.getElementById('gameOverText').textContent = 'Твой счёт: ' + score;
             document.getElementById('gameOverOverlay').classList.add('active');
         }
-
         function startGame() {
             document.getElementById('startOverlay').classList.remove('active');
             document.getElementById('gameOverOverlay').classList.remove('active');
@@ -556,20 +459,17 @@
                 gameLoop = setInterval(step, speed);
             }, 1000);
         }
-
         function togglePause() {
             if (!running) return;
             paused = !paused;
             document.getElementById('pauseOverlay').classList.toggle('active', paused);
         }
-
         function changeDir(x, y) {
             if (!running || paused) return;
             if (x === -dir.x && y === -dir.y) return;
             if (x === dir.x && y === dir.y) return;
             nextDir = {x, y};
         }
-
         document.addEventListener('keydown', (e) => {
             const keyMap = {
                 'ArrowUp': [0, -1], 'ArrowDown': [0, 1],
@@ -579,77 +479,52 @@
                 'ц': [0, -1], 'ы': [0, 1], 'ф': [-1, 0], 'в': [1, 0],
                 'Ц': [0, -1], 'Ы': [0, 1], 'Ф': [-1, 0], 'В': [1, 0]
             };
-            if (keyMap[e.key]) {
-                e.preventDefault();
-                changeDir(...keyMap[e.key]);
-            }
+            if (keyMap[e.key]) { e.preventDefault(); changeDir(...keyMap[e.key]); }
             if (e.key === ' ') { e.preventDefault(); togglePause(); }
         });
-
         let touchStartX = 0, touchStartY = 0;
         canvas.addEventListener('touchstart', (e) => {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
         }, {passive: true});
-
         canvas.addEventListener('touchend', (e) => {
             const dx = e.changedTouches[0].clientX - touchStartX;
             const dy = e.changedTouches[0].clientY - touchStartY;
             if (Math.abs(dx) < 30 && Math.abs(dy) < 30) return;
-            if (Math.abs(dx) > Math.abs(dy)) {
-                changeDir(dx > 0 ? 1 : -1, 0);
-            } else {
-                changeDir(0, dy > 0 ? 1 : -1);
-            }
+            if (Math.abs(dx) > Math.abs(dy)) changeDir(dx > 0 ? 1 : -1, 0);
+            else changeDir(0, dy > 0 ? 1 : -1);
         }, {passive: true});
-
         resetGame();
 
-        // ===== 2048 =====
+        // 2048
         let g2048Board = [];
         let g2048Score = 0;
         let g2048Best = parseInt(localStorage.getItem('ki-2048-best') || '0');
         let g2048Running = false;
-
         document.getElementById('g2048Best').textContent = g2048Best;
-
         const TILE_COLORS = {
-            2:    { bg: '#EEE4DA', color: '#776E65' },
-            4:    { bg: '#EDE0C8', color: '#776E65' },
-            8:    { bg: '#F2B179', color: '#FFFFFF' },
-            16:   { bg: '#F59563', color: '#FFFFFF' },
-            32:   { bg: '#F67C5F', color: '#FFFFFF' },
-            64:   { bg: '#F65E3B', color: '#FFFFFF' },
-            128:  { bg: '#EDCF72', color: '#FFFFFF' },
-            256:  { bg: '#EDCC61', color: '#FFFFFF' },
-            512:  { bg: '#EDC850', color: '#FFFFFF' },
-            1024: { bg: '#EDC53F', color: '#FFFFFF' },
-            2048: { bg: '#EDC22E', color: '#FFFFFF' }
+            2:{bg:'#EEE4DA',color:'#776E65'}, 4:{bg:'#EDE0C8',color:'#776E65'},
+            8:{bg:'#F2B179',color:'#FFFFFF'}, 16:{bg:'#F59563',color:'#FFFFFF'},
+            32:{bg:'#F67C5F',color:'#FFFFFF'}, 64:{bg:'#F65E3B',color:'#FFFFFF'},
+            128:{bg:'#EDCF72',color:'#FFFFFF'}, 256:{bg:'#EDCC61',color:'#FFFFFF'},
+            512:{bg:'#EDC850',color:'#FFFFFF'}, 1024:{bg:'#EDC53F',color:'#FFFFFF'},
+            2048:{bg:'#EDC22E',color:'#FFFFFF'}
         };
-
-        function getTileColor(value) {
-            return TILE_COLORS[value] || { bg: '#3C3A32', color: '#FFFFFF' };
-        }
-
+        function getTileColor(value) { return TILE_COLORS[value] || { bg: '#3C3A32', color: '#FFFFFF' }; }
         function init2048() {
             g2048Board = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
             g2048Score = 0;
             document.getElementById('g2048Score').textContent = '0';
-            addRandomTile();
-            addRandomTile();
+            addRandomTile(); addRandomTile();
             render2048();
         }
-
         function addRandomTile() {
             const empty = [];
-            for (let r = 0; r < 4; r++)
-                for (let c = 0; c < 4; c++)
-                    if (g2048Board[r][c] === 0) empty.push({r, c});
+            for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) if (g2048Board[r][c] === 0) empty.push({r, c});
             if (empty.length === 0) return;
             const spot = empty[Math.floor(Math.random() * empty.length)];
             g2048Board[spot.r][spot.c] = Math.random() < 0.9 ? 2 : 4;
         }
-
         function render2048() {
             const boardEl = document.getElementById('g2048Board');
             boardEl.innerHTML = '';
@@ -675,58 +550,41 @@
                 }
             }
         }
-
         function move2048(direction) {
             if (!g2048Running) return;
             const oldBoard = JSON.stringify(g2048Board);
             let moved = false;
             const rotate = (board) => board[0].map((_, i) => board.map(row => row[i]).reverse());
             let board = g2048Board.map(row => [...row]);
-
             const rotations = { left: 0, up: 1, right: 2, down: 3 };
             for (let i = 0; i < rotations[direction]; i++) board = rotate(board);
-
             for (let r = 0; r < 4; r++) {
                 let row = board[r].filter(v => v !== 0);
                 for (let i = 0; i < row.length - 1; i++) {
-                    if (row[i] === row[i + 1]) {
-                        row[i] *= 2;
-                        g2048Score += row[i];
-                        row[i + 1] = 0;
-                    }
+                    if (row[i] === row[i + 1]) { row[i] *= 2; g2048Score += row[i]; row[i + 1] = 0; }
                 }
                 row = row.filter(v => v !== 0);
                 while (row.length < 4) row.push(0);
                 board[r] = row;
             }
-
             for (let i = 0; i < (4 - rotations[direction]) % 4; i++) board = rotate(board);
-
             if (JSON.stringify(board) !== oldBoard) {
                 g2048Board = board;
                 addRandomTile();
                 moved = true;
             }
-
             if (moved) {
                 document.getElementById('g2048Score').textContent = g2048Score;
                 render2048();
                 check2048GameOver();
             }
         }
-
         function check2048GameOver() {
-            for (let r = 0; r < 4; r++)
-                for (let c = 0; c < 4; c++)
-                    if (g2048Board[r][c] === 0) return;
-
-            for (let r = 0; r < 4; r++) {
-                for (let c = 0; c < 4; c++) {
-                    if (c < 3 && g2048Board[r][c] === g2048Board[r][c + 1]) return;
-                    if (r < 3 && g2048Board[r][c] === g2048Board[r + 1][c]) return;
-                }
+            for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) if (g2048Board[r][c] === 0) return;
+            for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) {
+                if (c < 3 && g2048Board[r][c] === g2048Board[r][c + 1]) return;
+                if (r < 3 && g2048Board[r][c] === g2048Board[r + 1][c]) return;
             }
-
             g2048Running = false;
             if (g2048Score > g2048Best) {
                 g2048Best = g2048Score;
@@ -737,64 +595,42 @@
             document.getElementById('g2048OverText').textContent = 'Твой счёт: ' + g2048Score;
             document.getElementById('g2048Overlay').classList.add('active');
         }
-
         function start2048() {
             document.getElementById('g2048Overlay').classList.remove('active');
             g2048Running = true;
             init2048();
         }
-
         document.addEventListener('keydown', (e) => {
             if (!g2048Running) return;
-            const map = {
-                'ArrowUp': 'up', 'ArrowDown': 'down',
-                'ArrowLeft': 'left', 'ArrowRight': 'right'
-            };
-            if (map[e.key]) {
-                e.preventDefault();
-                move2048(map[e.key]);
-            }
+            const map = {'ArrowUp':'up','ArrowDown':'down','ArrowLeft':'left','ArrowRight':'right'};
+            if (map[e.key]) { e.preventDefault(); move2048(map[e.key]); }
         });
-
         const board2048El = document.getElementById('g2048Board');
         let t2048X = 0, t2048Y = 0;
-
         board2048El.addEventListener('touchstart', (e) => {
             t2048X = e.touches[0].clientX;
             t2048Y = e.touches[0].clientY;
         }, {passive: true});
-
         board2048El.addEventListener('touchend', (e) => {
             const dx = e.changedTouches[0].clientX - t2048X;
             const dy = e.changedTouches[0].clientY - t2048Y;
             if (Math.abs(dx) < 30 && Math.abs(dy) < 30) return;
-            if (Math.abs(dx) > Math.abs(dy)) {
-                move2048(dx > 0 ? 'right' : 'left');
-            } else {
-                move2048(dy > 0 ? 'down' : 'up');
-            }
+            if (Math.abs(dx) > Math.abs(dy)) move2048(dx > 0 ? 'right' : 'left');
+            else move2048(dy > 0 ? 'down' : 'up');
         }, {passive: true});
-
         init2048();
 
-        // ===== КРЕСТИКИ-НОЛИКИ =====
+        // КРЕСТИКИ-НОЛИКИ
         let tttBoard = ['', '', '', '', '', '', '', '', ''];
         let tttRunning = false;
         let tttPlayerTurn = true;
         let tttWins = parseInt(localStorage.getItem('ki-ttt-wins') || '0');
         let tttDraws = parseInt(localStorage.getItem('ki-ttt-draws') || '0');
         let tttLosses = parseInt(localStorage.getItem('ki-ttt-losses') || '0');
-
         document.getElementById('tttWins').textContent = tttWins;
         document.getElementById('tttDraws').textContent = tttDraws;
         document.getElementById('tttLosses').textContent = tttLosses;
-
-        const WIN_LINES = [
-            [0,1,2], [3,4,5], [6,7,8],
-            [0,3,6], [1,4,7], [2,5,8],
-            [0,4,8], [2,4,6]
-        ];
-
+        const WIN_LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
         function renderTTT() {
             const boardEl = document.getElementById('tttBoard');
             boardEl.innerHTML = '';
@@ -820,24 +656,18 @@
                 boardEl.appendChild(cell);
             });
         }
-
         function tttClick(index) {
             if (!tttRunning || !tttPlayerTurn) return;
             if (tttBoard[index] !== '') return;
-
             tttBoard[index] = 'X';
             renderTTT();
-
             if (checkTTTWin('X')) { endTTT('win'); return; }
             if (isTTTFull()) { endTTT('draw'); return; }
-
             tttPlayerTurn = false;
             setTimeout(tttAIMove, 400);
         }
-
         function tttAIMove() {
             if (!tttRunning) return;
-
             let move = findBestMove('O');
             if (move === -1) move = findBestMove('X');
             if (move === -1 && tttBoard[4] === '') move = 4;
@@ -849,44 +679,30 @@
                 const empty = tttBoard.map((v, i) => v === '' ? i : -1).filter(i => i !== -1);
                 if (empty.length > 0) move = empty[Math.floor(Math.random() * empty.length)];
             }
-
             if (move !== -1) {
                 tttBoard[move] = 'O';
                 renderTTT();
-
                 if (checkTTTWin('O')) { endTTT('loss'); return; }
                 if (isTTTFull()) { endTTT('draw'); return; }
             }
-
             tttPlayerTurn = true;
         }
-
         function findBestMove(player) {
             for (const line of WIN_LINES) {
                 const values = line.map(i => tttBoard[i]);
                 const countPlayer = values.filter(v => v === player).length;
                 const countEmpty = values.filter(v => v === '').length;
-                if (countPlayer === 2 && countEmpty === 1) {
-                    return line[values.indexOf('')];
-                }
+                if (countPlayer === 2 && countEmpty === 1) return line[values.indexOf('')];
             }
             return -1;
         }
-
-        function checkTTTWin(player) {
-            return WIN_LINES.some(line => line.every(i => tttBoard[i] === player));
-        }
-
-        function isTTTFull() {
-            return tttBoard.every(v => v !== '');
-        }
-
+        function checkTTTWin(player) { return WIN_LINES.some(line => line.every(i => tttBoard[i] === player)); }
+        function isTTTFull() { return tttBoard.every(v => v !== ''); }
         function endTTT(result) {
             tttRunning = false;
             const overlay = document.getElementById('tttOverlay');
             const title = document.getElementById('tttOverTitle');
             const text = document.getElementById('tttOverText');
-
             if (result === 'win') {
                 tttWins++;
                 localStorage.setItem('ki-ttt-wins', tttWins);
@@ -906,10 +722,8 @@
                 title.textContent = '🤝 Ничья';
                 text.textContent = 'Хорошая игра!';
             }
-
             overlay.classList.add('active');
         }
-
         function startTTT() {
             tttBoard = ['', '', '', '', '', '', '', '', ''];
             tttRunning = true;
@@ -917,7 +731,6 @@
             document.getElementById('tttOverlay').classList.remove('active');
             renderTTT();
         }
-
         renderTTT();
     </script>
 </body>
