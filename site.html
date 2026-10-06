@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>О проекте — Ki Tools</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF8C00">
     <link rel="stylesheet" href="style.css">
     <style>
         .about-section {
@@ -16,7 +18,6 @@
             margin-bottom: 25px;
             animation: popIn 0.6s ease-out both;
         }
-
         .about-section h2 {
             font-size: 24px;
             margin-bottom: 15px;
@@ -24,16 +25,13 @@
             align-items: center;
             gap: 10px;
         }
-
         .about-section p {
             font-size: 15px;
             line-height: 1.7;
             color: var(--text-dim);
             margin-bottom: 12px;
         }
-
         .about-section p:last-child { margin-bottom: 0; }
-
         .hero {
             text-align: center;
             padding: 40px 25px;
@@ -44,7 +42,6 @@
             margin-bottom: 25px;
             animation: popIn 0.6s ease-out both;
         }
-
         .hero-logo {
             font-size: 64px;
             font-weight: 900;
@@ -52,15 +49,12 @@
             margin-bottom: 10px;
             line-height: 1;
         }
-
         .hero-logo span { color: var(--accent); }
-
         .hero-tagline {
             font-size: 18px;
             color: var(--text-dim);
             margin-bottom: 25px;
         }
-
         .hero-badge {
             display: inline-block;
             background: rgba(255,255,255,0.15);
@@ -70,12 +64,7 @@
             font-size: 14px;
             font-weight: 600;
         }
-
-        .feature-list {
-            list-style: none;
-            padding: 0;
-        }
-
+        .feature-list { list-style: none; padding: 0; }
         .feature-list li {
             padding: 12px 0;
             font-size: 15px;
@@ -85,23 +74,19 @@
             align-items: center;
             gap: 10px;
         }
-
         .feature-list li:last-child { border-bottom: none; }
-
         .feature-list li::before {
             content: '▸';
             color: var(--primary);
             font-weight: 900;
             font-size: 18px;
         }
-
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 15px;
             margin-top: 15px;
         }
-
         .stat-box {
             background: rgba(0, 0, 0, 0.15);
             border: 1px solid var(--card-border);
@@ -109,28 +94,24 @@
             padding: 18px;
             text-align: center;
         }
-
         .stat-value {
             font-size: 28px;
             font-weight: 900;
             color: var(--primary);
             margin-bottom: 4px;
         }
-
         .stat-label {
             font-size: 12px;
             color: var(--text-dim);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-
         .contact-links {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
             margin-top: 15px;
         }
-
         .contact-links a {
             display: inline-flex;
             align-items: center;
@@ -145,12 +126,10 @@
             font-weight: 600;
             transition: background 0.3s, transform 0.3s;
         }
-
         .contact-links a:hover {
             background: rgba(255, 255, 255, 0.25);
             transform: translateY(-3px);
         }
-
         @media (max-width: 600px) {
             .about-section { padding: 20px; }
             .about-section h2 { font-size: 19px; }
@@ -164,25 +143,39 @@
     </style>
 </head>
 <body>
+    <div class="aquarium">
+        <div class="fish">🐠</div>
+        <div class="fish">🐟</div>
+        <div class="fish">🐡</div>
+        <div class="fish">🦈</div>
+        <div class="fish">🐠</div>
+        <div class="fish">🐟</div>
+        <div class="bubble-fish"></div>
+        <div class="bubble-fish"></div>
+        <div class="bubble-fish"></div>
+        <div class="bubble-fish"></div>
+        <div class="bubble-fish"></div>
+        <div class="bubble-fish"></div>
+    </div>
+
     <header class="header">
         <a href="index.html" class="logo">Ki<span>.</span>Tools</a>
         <nav class="nav">
             <a href="tools.html">🛠️ Инструменты</a>
             <a href="game.html">🎮 Игры</a>
+            <a href="site.html">📖 О проекте</a>
             <button class="settings-btn" onclick="openSettings()">⚙️</button>
         </nav>
     </header>
 
     <div class="container">
 
-        <!-- Hero -->
         <div class="hero">
             <div class="hero-logo">Ki<span>.</span>Tools</div>
             <p class="hero-tagline">Полезные инструменты и игры в одном месте</p>
             <div class="hero-badge">🍊 Проект в активной разработке</div>
         </div>
 
-        <!-- О проекте -->
         <div class="about-section">
             <h2>🎯 О проекте</h2>
             <p>
@@ -191,13 +184,13 @@
                 открыл сайт — и пользуешься.
             </p>
             <p>
-                Проект создаётся с нуля как открытый и бесплатный. Главная цель —
+                Проект создаётся с нуля как открытый и бесплатный студией
+                <strong>DONATE BOUSE STUDIO</strong>. Главная цель —
                 сделать простой, быстрый и красивый сайт, которым приятно пользоваться
                 каждый день.
             </p>
         </div>
 
-        <!-- Что уже есть -->
         <div class="about-section">
             <h2>✨ Что уже работает</h2>
             <ul class="feature-list">
@@ -205,12 +198,12 @@
                 <li>🧮 Калькулятор с поддержкой клавиатуры</li>
                 <li>🐍 Змейка — управление WASD, стрелками, свайпами и кнопками</li>
                 <li>🔢 2048 — классическая головоломка со свайпами</li>
-                <li>🎨 Пять тем оформления: оранжевая, тёмная, светлая, синяя, зелёная</li>
+                <li>❌⭕ Крестики-нолики против ИИ</li>
+                <li>🎨 Шесть тем оформления, включая «🐠 Рыбки»</li>
                 <li>📱 Полная адаптация под телефон</li>
             </ul>
         </div>
 
-        <!-- Что планируется -->
         <div class="about-section">
             <h2>🚧 Что планируется</h2>
             <ul class="feature-list">
@@ -222,7 +215,6 @@
             </ul>
         </div>
 
-        <!-- Статистика -->
         <div class="about-section">
             <h2>📊 В цифрах</h2>
             <div class="stats-grid">
@@ -235,7 +227,7 @@
                     <div class="stat-label">Игры</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">5</div>
+                    <div class="stat-value">6</div>
                     <div class="stat-label">Тем</div>
                 </div>
                 <div class="stat-box">
@@ -245,7 +237,6 @@
             </div>
         </div>
 
-        <!-- Контакты -->
         <div class="about-section">
             <h2>📬 Связаться</h2>
             <p>Проект открытый. Следи за обновлениями или предложи идею:</p>
@@ -260,10 +251,9 @@
     </div>
 
     <footer class="footer">
-        <p>© 2026 Ki Tools · Сделано с 🍊</p>
+        <p>© 2026 Ki Tools · От <strong>DONATE BOUSE STUDIO</strong> · Сделано с 🍊</p>
     </footer>
 
-    <!-- Модальное окно настроек -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal">
             <h2>🎨 Выбери тему</h2>
@@ -273,6 +263,7 @@
                 <div class="theme-option theme-light" onclick="setTheme('light')">Светлая</div>
                 <div class="theme-option theme-blue" onclick="setTheme('blue')">Синяя</div>
                 <div class="theme-option theme-green" onclick="setTheme('green')">Зелёная</div>
+                <div class="theme-option theme-fish" onclick="setTheme('fish')">🐠 Рыбки</div>
             </div>
             <button class="close-btn" onclick="closeSettings()">Готово</button>
         </div>
