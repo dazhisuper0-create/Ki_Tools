@@ -25,7 +25,6 @@
             gap: 10px;
         }
 
-        /* Счёт и рекорд */
         .score-row {
             display: flex;
             justify-content: space-between;
@@ -36,7 +35,7 @@
 
         .score-box {
             flex: 1;
-            min-width: 120px;
+            min-width: 100px;
             background: rgba(0, 0, 0, 0.15);
             border: 1px solid var(--card-border);
             border-radius: 15px;
@@ -57,7 +56,6 @@
             font-weight: 900;
         }
 
-        /* Игровое поле */
         .canvas-wrap {
             display: flex;
             justify-content: center;
@@ -75,7 +73,6 @@
             display: block;
         }
 
-        /* Оверлей «Пауза» / «Игра окончена» */
         .overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -103,7 +100,6 @@
             margin-bottom: 18px;
         }
 
-        /* Кнопки управления */
         .btn {
             padding: 13px 26px;
             border-radius: 50px;
@@ -140,7 +136,6 @@
             justify-content: center;
         }
 
-        /* Кнопки-стрелки для телефона */
         .dpad {
             display: grid;
             grid-template-columns: repeat(3, 60px);
@@ -180,7 +175,7 @@
             .game-section h2 { font-size: 18px; }
             .score-value { font-size: 22px; }
             .overlay h3 { font-size: 20px; }
-            #gameCanvas { max-width: 100%; }
+            .dpad { grid-template-columns: repeat(3, 55px); grid-template-rows: repeat(2, 55px); }
         }
     </style>
 </head>
@@ -190,11 +185,14 @@
         <nav class="nav">
             <a href="tools.html">🛠️ Инструменты</a>
             <a href="game.html">🎮 Игры</a>
+            <a href="site.html">📖 О проекте</a>
             <button class="settings-btn" onclick="openSettings()">⚙️</button>
         </nav>
     </header>
 
     <div class="container">
+
+        <!-- ===== ЗМЕЙКА ===== -->
         <div class="game-section">
             <h2>🐍 Змейка</h2>
 
@@ -212,9 +210,9 @@
             <div class="canvas-wrap">
                 <canvas id="gameCanvas" width="400" height="400"></canvas>
 
-                <div class="overlay" id="startOverlay">
+                <div class="overlay active" id="startOverlay">
                     <h3>🐍 Змейка</h3>
-                    <p>Управление стрелками или свайпами</p>
+                    <p>WASD · Стрелки · Свайпы · Кнопки</p>
                     <button class="btn" onclick="startGame()">▶ Начать игру</button>
                 </div>
 
@@ -236,7 +234,6 @@
                 <button class="btn btn-secondary" onclick="startGame()">🔄 Заново</button>
             </div>
 
-            <!-- Кнопки-стрелки для телефона -->
             <div class="dpad">
                 <button class="up" ontouchstart="changeDir(0,-1)" onclick="changeDir(0,-1)">▲</button>
                 <button class="left" ontouchstart="changeDir(-1,0)" onclick="changeDir(-1,0)">◀</button>
@@ -244,9 +241,11 @@
                 <button class="right" ontouchstart="changeDir(1,0)" onclick="changeDir(1,0)">▶</button>
             </div>
 
-            <p class="hint">Стрелки на клавиатуре · Свайпы на поле · Кнопки ниже</p>
+            <p class="hint">WASD или стрелки · Свайпы по полю · Кнопки ниже</p>
         </div>
-             <div class="game-section">
+
+        <!-- ===== 2048 ===== -->
+        <div class="game-section">
             <h2>🔢 2048</h2>
 
             <div class="score-row">
@@ -274,18 +273,66 @@
                     user-select: none;
                 "></div>
 
-                <div class="overlay" id="g2048Overlay">
+                <div class="overlay active" id="g2048Overlay">
                     <h3 id="g2048OverTitle">🔢 2048</h3>
                     <p id="g2048OverText">Соединяй плитки, чтобы получить 2048</p>
                     <button class="btn" onclick="start2048()">▶ Начать игру</button>
                 </div>
+            </div>
 
             <div class="btn-row">
                 <button class="btn btn-secondary" onclick="start2048()">🔄 Заново</button>
             </div>
 
             <p class="hint">Стрелки на клавиатуре · Свайпы на поле</p>
-        </div>   
+        </div>
+
+        <!-- ===== КРЕСТИКИ-НОЛИКИ ===== -->
+        <div class="game-section">
+            <h2>❌⭕ Крестики-нолики</h2>
+
+            <div class="score-row">
+                <div class="score-box">
+                    <div class="score-label">Победы</div>
+                    <div class="score-value" id="tttWins">0</div>
+                </div>
+                <div class="score-box">
+                    <div class="score-label">Ничьи</div>
+                    <div class="score-value" id="tttDraws">0</div>
+                </div>
+                <div class="score-box">
+                    <div class="score-label">Поражения</div>
+                    <div class="score-value" id="tttLosses">0</div>
+                </div>
+            </div>
+
+            <div class="canvas-wrap">
+                <div id="tttBoard" style="
+                    display: grid;
+                    grid-template-columns: repeat(3, 90px);
+                    grid-template-rows: repeat(3, 90px);
+                    gap: 10px;
+                    background: rgba(0,0,0,0.25);
+                    padding: 12px;
+                    border-radius: 18px;
+                    border: 2px solid var(--card-border);
+                    user-select: none;
+                "></div>
+
+                <div class="overlay active" id="tttOverlay">
+                    <h3 id="tttOverTitle">❌⭕ Крестики-нолики</h3>
+                    <p id="tttOverText">Ты играешь за ❌. Собери три в ряд!</p>
+                    <button class="btn" onclick="startTTT()">▶ Начать игру</button>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-secondary" onclick="startTTT()">🔄 Заново</button>
+            </div>
+
+            <p class="hint">Тапни по клетке, чтобы поставить ❌</p>
+        </div>
+
     </div>
 
     <footer class="footer">
@@ -342,6 +389,22 @@
         best = parseInt(localStorage.getItem('ki-snake-best') || '0');
         document.getElementById('best').textContent = best;
 
+        // Полифилл roundRect
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                if (w < 2 * r) r = w / 2;
+                if (h < 2 * r) r = h / 2;
+                this.beginPath();
+                this.moveTo(x + r, y);
+                this.arcTo(x + w, y, x + w, y + h, r);
+                this.arcTo(x + w, y + h, x, y + h, r);
+                this.arcTo(x, y + h, x, y, r);
+                this.arcTo(x, y, x + w, y, r);
+                this.closePath();
+                return this;
+            };
+        }
+
         function resetGame() {
             snake = [{x: 10, y: 10}, {x: 9, y: 10}, {x: 8, y: 10}];
             dir = {x: 1, y: 0};
@@ -367,11 +430,9 @@
         }
 
         function draw() {
-            // Фон
             ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Сетка (едва заметная)
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
             ctx.lineWidth = 1;
             for (let i = 0; i <= COLS; i++) {
@@ -387,13 +448,12 @@
                 ctx.stroke();
             }
 
-            // Еда (яблоко)
+            // Еда
             ctx.fillStyle = '#FF3B30';
             ctx.beginPath();
             ctx.arc(food.x * CELL + CELL/2, food.y * CELL + CELL/2, CELL/2 - 2, 0, Math.PI * 2);
             ctx.fill();
 
-            // Блик на яблоке
             ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
             ctx.beginPath();
             ctx.arc(food.x * CELL + CELL/2 - 3, food.y * CELL + CELL/2 - 3, 2, 0, Math.PI * 2);
@@ -404,19 +464,11 @@
                 const isHead = i === 0;
                 ctx.fillStyle = isHead ? '#FF8C00' : '#E85D00';
                 ctx.beginPath();
-                ctx.roundRect(
-                    seg.x * CELL + 2,
-                    seg.y * CELL + 2,
-                    CELL - 4,
-                    CELL - 4,
-                    isHead ? 7 : 5
-                );
+                ctx.roundRect(seg.x * CELL + 2, seg.y * CELL + 2, CELL - 4, CELL - 4, isHead ? 7 : 5);
                 ctx.fill();
 
-                // Глаза на голове
                 if (isHead) {
                     ctx.fillStyle = '#fff';
-                    const eyeSize = 3;
                     let ex1, ey1, ex2, ey2;
                     if (dir.x === 1) { ex1 = 13; ey1 = 7; ex2 = 13; ey2 = 13; }
                     else if (dir.x === -1) { ex1 = 7; ey1 = 7; ex2 = 7; ey2 = 13; }
@@ -424,13 +476,12 @@
                     else { ex1 = 7; ey1 = 7; ex2 = 13; ey2 = 7; }
 
                     ctx.beginPath();
-                    ctx.arc(seg.x * CELL + ex1, seg.y * CELL + ey1, eyeSize, 0, Math.PI * 2);
+                    ctx.arc(seg.x * CELL + ex1, seg.y * CELL + ey1, 3, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.beginPath();
-                    ctx.arc(seg.x * CELL + ex2, seg.y * CELL + ey2, eyeSize, 0, Math.PI * 2);
+                    ctx.arc(seg.x * CELL + ex2, seg.y * CELL + ey2, 3, 0, Math.PI * 2);
                     ctx.fill();
 
-                    // Зрачки
                     ctx.fillStyle = '#000';
                     ctx.beginPath();
                     ctx.arc(seg.x * CELL + ex1 + dir.x, seg.y * CELL + ey1 + dir.y, 1.5, 0, Math.PI * 2);
@@ -442,51 +493,23 @@
             });
         }
 
-        // Полифилл для roundRect (старые браузеры)
-        if (!CanvasRenderingContext2D.prototype.roundRect) {
-            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
-                if (w < 2 * r) r = w / 2;
-                if (h < 2 * r) r = h / 2;
-                this.beginPath();
-                this.moveTo(x + r, y);
-                this.arcTo(x + w, y, x + w, y + h, r);
-                this.arcTo(x + w, y + h, x, y + h, r);
-                this.arcTo(x, y + h, x, y, r);
-                this.arcTo(x, y, x + w, y, r);
-                this.closePath();
-                return this;
-            };
-        }
-
         function step() {
             if (paused) return;
-
             dir = nextDir;
             const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
 
-            // Столкновение со стенами
-            if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) {
-                return gameOver();
-            }
-
-            // Столкновение с собой
-            if (snake.some(s => s.x === head.x && s.y === head.y)) {
-                return gameOver();
-            }
+            if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) return gameOver();
+            if (snake.some(s => s.x === head.x && s.y === head.y)) return gameOver();
 
             snake.unshift(head);
-
-            // Съел еду?
             if (head.x === food.x && head.y === food.y) {
                 score += 10;
                 document.getElementById('score').textContent = score;
                 placeFood();
-                // Ускорение
                 if (speed > 60) speed -= 3;
             } else {
                 snake.pop();
             }
-
             draw();
         }
 
@@ -510,7 +533,6 @@
             running = true;
             clearInterval(gameLoop);
             gameLoop = setInterval(step, speed);
-            // Адаптивная скорость
             const speedUpdater = setInterval(() => {
                 if (!running) { clearInterval(speedUpdater); return; }
                 clearInterval(gameLoop);
@@ -525,20 +547,20 @@
         }
 
         function changeDir(x, y) {
-            if (!running) return;
-            // Нельзя развернуться на 180°
+            if (!running || paused) return;
             if (x === -dir.x && y === -dir.y) return;
             if (x === dir.x && y === dir.y) return;
             nextDir = {x, y};
         }
 
-        // Клавиатура
         document.addEventListener('keydown', (e) => {
             const keyMap = {
                 'ArrowUp': [0, -1], 'ArrowDown': [0, 1],
                 'ArrowLeft': [-1, 0], 'ArrowRight': [1, 0],
                 'w': [0, -1], 's': [0, 1], 'a': [-1, 0], 'd': [1, 0],
-                'W': [0, -1], 'S': [0, 1], 'A': [-1, 0], 'D': [1, 0]
+                'W': [0, -1], 'S': [0, 1], 'A': [-1, 0], 'D': [1, 0],
+                'ц': [0, -1], 'ы': [0, 1], 'ф': [-1, 0], 'в': [1, 0],
+                'Ц': [0, -1], 'Ы': [0, 1], 'Ф': [-1, 0], 'В': [1, 0]
             };
             if (keyMap[e.key]) {
                 e.preventDefault();
@@ -547,7 +569,6 @@
             if (e.key === ' ') { e.preventDefault(); togglePause(); }
         });
 
-        // Свайпы
         let touchStartX = 0, touchStartY = 0;
         canvas.addEventListener('touchstart', (e) => {
             touchStartX = e.touches[0].clientX;
@@ -564,6 +585,9 @@
                 changeDir(0, dy > 0 ? 1 : -1);
             }
         }, {passive: true});
+
+        resetGame();
+
         // ===== 2048 =====
         let g2048Board = [];
         let g2048Score = 0;
@@ -572,7 +596,6 @@
 
         document.getElementById('g2048Best').textContent = g2048Best;
 
-        // Цвета плиток
         const TILE_COLORS = {
             2:    { bg: '#EEE4DA', color: '#776E65' },
             4:    { bg: '#EDE0C8', color: '#776E65' },
@@ -592,12 +615,7 @@
         }
 
         function init2048() {
-            g2048Board = [
-                [0, 0, 0, 0],
-                [0, 0, 0, 0],
-                [0, 0, 0, 0],
-                [0, 0, 0, 0]
-            ];
+            g2048Board = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
             g2048Score = 0;
             document.getElementById('g2048Score').textContent = '0';
             addRandomTile();
@@ -607,11 +625,9 @@
 
         function addRandomTile() {
             const empty = [];
-            for (let r = 0; r < 4; r++) {
-                for (let c = 0; c < 4; c++) {
+            for (let r = 0; r < 4; r++)
+                for (let c = 0; c < 4; c++)
                     if (g2048Board[r][c] === 0) empty.push({r, c});
-                }
-            }
             if (empty.length === 0) return;
             const spot = empty[Math.floor(Math.random() * empty.length)];
             g2048Board[spot.r][spot.c] = Math.random() < 0.9 ? 2 : 4;
@@ -645,21 +661,14 @@
 
         function move2048(direction) {
             if (!g2048Running) return;
-
             const oldBoard = JSON.stringify(g2048Board);
             let moved = false;
-
             const rotate = (board) => board[0].map((_, i) => board.map(row => row[i]).reverse());
-
             let board = g2048Board.map(row => [...row]);
 
-            // Поворачиваем так, чтобы движение было всегда "влево"
             const rotations = { left: 0, up: 1, right: 2, down: 3 };
-            for (let i = 0; i < rotations[direction]; i++) {
-                board = rotate(board);
-            }
+            for (let i = 0; i < rotations[direction]; i++) board = rotate(board);
 
-            // Сдвигаем и сливаем
             for (let r = 0; r < 4; r++) {
                 let row = board[r].filter(v => v !== 0);
                 for (let i = 0; i < row.length - 1; i++) {
@@ -674,10 +683,7 @@
                 board[r] = row;
             }
 
-            // Обратно поворачиваем
-            for (let i = 0; i < (4 - rotations[direction]) % 4; i++) {
-                board = rotate(board);
-            }
+            for (let i = 0; i < (4 - rotations[direction]) % 4; i++) board = rotate(board);
 
             if (JSON.stringify(board) !== oldBoard) {
                 g2048Board = board;
@@ -693,12 +699,10 @@
         }
 
         function check2048GameOver() {
-            // Есть пустые клетки?
             for (let r = 0; r < 4; r++)
                 for (let c = 0; c < 4; c++)
                     if (g2048Board[r][c] === 0) return;
 
-            // Есть соседние одинаковые?
             for (let r = 0; r < 4; r++) {
                 for (let c = 0; c < 4; c++) {
                     if (c < 3 && g2048Board[r][c] === g2048Board[r][c + 1]) return;
@@ -706,7 +710,6 @@
                 }
             }
 
-            // Игра окончена
             g2048Running = false;
             if (g2048Score > g2048Best) {
                 g2048Best = g2048Score;
@@ -724,7 +727,6 @@
             init2048();
         }
 
-        // Управление 2048
         document.addEventListener('keydown', (e) => {
             if (!g2048Running) return;
             const map = {
@@ -737,7 +739,6 @@
             }
         });
 
-        // Свайпы для 2048
         const board2048El = document.getElementById('g2048Board');
         let t2048X = 0, t2048Y = 0;
 
@@ -757,10 +758,150 @@
             }
         }, {passive: true});
 
-        // Инициализация 2048
         init2048();
-        // Инициализация
-        resetGame();
+
+        // ===== КРЕСТИКИ-НОЛИКИ =====
+        let tttBoard = ['', '', '', '', '', '', '', '', ''];
+        let tttRunning = false;
+        let tttPlayerTurn = true;
+        let tttWins = parseInt(localStorage.getItem('ki-ttt-wins') || '0');
+        let tttDraws = parseInt(localStorage.getItem('ki-ttt-draws') || '0');
+        let tttLosses = parseInt(localStorage.getItem('ki-ttt-losses') || '0');
+
+        document.getElementById('tttWins').textContent = tttWins;
+        document.getElementById('tttDraws').textContent = tttDraws;
+        document.getElementById('tttLosses').textContent = tttLosses;
+
+        const WIN_LINES = [
+            [0,1,2], [3,4,5], [6,7,8],
+            [0,3,6], [1,4,7], [2,5,8],
+            [0,4,8], [2,4,6]
+        ];
+
+        function renderTTT() {
+            const boardEl = document.getElementById('tttBoard');
+            boardEl.innerHTML = '';
+            tttBoard.forEach((val, i) => {
+                const cell = document.createElement('div');
+                cell.style.cssText = `
+                    background: rgba(255,255,255,0.08);
+                    border-radius: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 48px;
+                    font-weight: 900;
+                    cursor: pointer;
+                    transition: background 0.2s;
+                    color: ${val === 'X' ? '#FF8C00' : (val === 'O' ? '#2196F3' : '#fff')};
+                    font-family: inherit;
+                `;
+                cell.textContent = val;
+                cell.onmouseenter = () => { if (tttRunning && val === '') cell.style.background = 'rgba(255,255,255,0.18)'; };
+                cell.onmouseleave = () => { cell.style.background = 'rgba(255,255,255,0.08)'; };
+                cell.onclick = () => tttClick(i);
+                boardEl.appendChild(cell);
+            });
+        }
+
+        function tttClick(index) {
+            if (!tttRunning || !tttPlayerTurn) return;
+            if (tttBoard[index] !== '') return;
+
+            tttBoard[index] = 'X';
+            renderTTT();
+
+            if (checkTTTWin('X')) { endTTT('win'); return; }
+            if (isTTTFull()) { endTTT('draw'); return; }
+
+            tttPlayerTurn = false;
+            setTimeout(tttAIMove, 400);
+        }
+
+        function tttAIMove() {
+            if (!tttRunning) return;
+
+            let move = findBestMove('O');
+            if (move === -1) move = findBestMove('X');
+            if (move === -1 && tttBoard[4] === '') move = 4;
+            if (move === -1) {
+                const corners = [0, 2, 6, 8].filter(i => tttBoard[i] === '');
+                if (corners.length > 0) move = corners[Math.floor(Math.random() * corners.length)];
+            }
+            if (move === -1) {
+                const empty = tttBoard.map((v, i) => v === '' ? i : -1).filter(i => i !== -1);
+                if (empty.length > 0) move = empty[Math.floor(Math.random() * empty.length)];
+            }
+
+            if (move !== -1) {
+                tttBoard[move] = 'O';
+                renderTTT();
+
+                if (checkTTTWin('O')) { endTTT('loss'); return; }
+                if (isTTTFull()) { endTTT('draw'); return; }
+            }
+
+            tttPlayerTurn = true;
+        }
+
+        function findBestMove(player) {
+            for (const line of WIN_LINES) {
+                const values = line.map(i => tttBoard[i]);
+                const countPlayer = values.filter(v => v === player).length;
+                const countEmpty = values.filter(v => v === '').length;
+                if (countPlayer === 2 && countEmpty === 1) {
+                    return line[values.indexOf('')];
+                }
+            }
+            return -1;
+        }
+
+        function checkTTTWin(player) {
+            return WIN_LINES.some(line => line.every(i => tttBoard[i] === player));
+        }
+
+        function isTTTFull() {
+            return tttBoard.every(v => v !== '');
+        }
+
+        function endTTT(result) {
+            tttRunning = false;
+            const overlay = document.getElementById('tttOverlay');
+            const title = document.getElementById('tttOverTitle');
+            const text = document.getElementById('tttOverText');
+
+            if (result === 'win') {
+                tttWins++;
+                localStorage.setItem('ki-ttt-wins', tttWins);
+                document.getElementById('tttWins').textContent = tttWins;
+                title.textContent = '🎉 Ты победил!';
+                text.textContent = 'Отличная игра!';
+            } else if (result === 'loss') {
+                tttLosses++;
+                localStorage.setItem('ki-ttt-losses', tttLosses);
+                document.getElementById('tttLosses').textContent = tttLosses;
+                title.textContent = '😔 Ты проиграл';
+                text.textContent = 'Попробуй ещё раз!';
+            } else {
+                tttDraws++;
+                localStorage.setItem('ki-ttt-draws', tttDraws);
+                document.getElementById('tttDraws').textContent = tttDraws;
+                title.textContent = '🤝 Ничья';
+                text.textContent = 'Хорошая игра!';
+            }
+
+            overlay.classList.add('active');
+        }
+
+        function startTTT() {
+            tttBoard = ['', '', '', '', '', '', '', '', ''];
+            tttRunning = true;
+            tttPlayerTurn = true;
+            document.getElementById('tttOverlay').classList.remove('active');
+            renderTTT();
+        }
+
+        renderTTT();
     </script>
 </body>
 </html>
