@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игры — Ki Tools</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            animation: popIn 0.6s ease-out both;
+        }
+
+        .game-section h2 {
+            font-size: 22px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Счёт и рекорд */
+        .score-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .score-box {
+            flex: 1;
+            min-width: 120px;
+            background: rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--card-border);
+            border-radius: 15px;
+            padding: 12px 18px;
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 12px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .score-value {
+            font-size: 26px;
+            font-weight: 900;
+        }
+
+        /* Игровое поле */
+        .canvas-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 18px;
+            position: relative;
+        }
+
+        #gameCanvas {
+            background: rgba(0, 0, 0, 0.25);
+            border: 2px solid var(--card-border);
+            border-radius: 18px;
+            max-width: 100%;
+            height: auto;
+            touch-action: none;
+            display: block;
+        }
+
+        /* Оверлей «Пауза» / «Игра окончена» */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 18px;
+            text-align: center;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        .overlay.active { display: flex; }
+
+        .overlay h3 {
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+
+        .overlay p {
+            font-size: 15px;
+            color: var(--text-dim);
+            margin-bottom: 18px;
+        }
+
+        /* Кнопки управления */
+        .btn {
+            padding: 13px 26px;
+            border-radius: 50px;
+            border: none;
+            background: var(--primary);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn:active { transform: scale(0.97); }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Кнопки-стрелки для телефона */
+        .dpad {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            grid-template-rows: repeat(2, 60px);
+            gap: 8px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .dpad button {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid var(--card-border);
+            border-radius: 15px;
+            color: var(--text);
+            font-size: 24px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .dpad button:hover { background: rgba(255, 255, 255, 0.28); }
+        .dpad button:active { transform: scale(0.92); }
+
+        .dpad .up { grid-column: 2; grid-row: 1; }
+        .dpad .left { grid-column: 1; grid-row: 2; }
+        .dpad .down { grid-column: 2; grid-row: 2; }
+        .dpad .right { grid-column: 3; grid-row: 2; }
+
+        .hint {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-top: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .game-section { padding: 18px; }
+            .game-section h2 { font-size: 18px; }
+            .score-value { font-size: 22px; }
+            .overlay h3 { font-size: 20px; }
+            #gameCanvas { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo">Ki<span>.</span>Tools</a>
+        <nav class="nav">
+            <a href="tools.html">🛠️ Инструменты</a>
+            <a href="game.html">🎮 Игры</a>
+            <button class="settings-btn" onclick="openSettings()">⚙️</button>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="game-section">
+            <h2>🐍 Змейка</h2>
+
+            <div class="score-row">
+                <div class="score-box">
+                    <div class="score-label">Счёт</div>
+                    <div class="score-value" id="score">0</div>
+                </div>
+                <div class="score-box">
+                    <div class="score-label">Рекорд</div>
+                    <div class="score-value" id="best">0</div>
+                </div>
+            </div>
+
+            <div class="canvas-wrap">
+                <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+                <div class="overlay" id="startOverlay">
+                    <h3>🐍 Змейка</h3>
+                    <p>Управление стрелками или свайпами</p>
+                    <button class="btn" onclick="startGame()">▶ Начать игру</button>
+                </div>
+
+                <div class="overlay" id="gameOverOverlay">
+                    <h3>💀 Игра окончена</h3>
+                    <p id="gameOverText">Твой счёт: 0</p>
+                    <button class="btn" onclick="startGame()">🔄 Заново</button>
+                </div>
+
+                <div class="overlay" id="pauseOverlay">
+                    <h3>⏸ Пауза</h3>
+                    <p>Нажми, чтобы продолжить</p>
+                    <button class="btn" onclick="togglePause()">▶ Продолжить</button>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-secondary" onclick="togglePause()">⏸ Пауза</button>
+                <button class="btn btn-secondary" onclick="startGame()">🔄 Заново</button>
+            </div>
+
+            <!-- Кнопки-стрелки для телефона -->
+            <div class="dpad">
+                <button class="up" ontouchstart="changeDir(0,-1)" onclick="changeDir(0,-1)">▲</button>
+                <button class="left" ontouchstart="changeDir(-1,0)" onclick="changeDir(-1,0)">◀</button>
+                <button class="down" ontouchstart="changeDir(0,1)" onclick="changeDir(0,1)">▼</button>
+                <button class="right" ontouchstart="changeDir(1,0)" onclick="changeDir(1,0)">▶</button>
+            </div>
+
+            <p class="hint">Стрелки на клавиатуре · Свайпы на поле · Кнопки ниже</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© 2026 Ki Tools · Сделано с 🍊</p>
+    </footer>
+
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <h2>🎨 Выбери тему</h2>
+            <div class="theme-grid">
+                <div class="theme-option theme-orange" onclick="setTheme('orange')">Оранжевая</div>
+                <div class="theme-option theme-dark" onclick="setTheme('dark')">Тёмная</div>
+                <div class="theme-option theme-light" onclick="setTheme('light')">Светлая</div>
+                <div class="theme-option theme-blue" onclick="setTheme('blue')">Синяя</div>
+                <div class="theme-option theme-green" onclick="setTheme('green')">Зелёная</div>
+            </div>
+            <button class="close-btn" onclick="closeSettings()">Готово</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== ТЕМА =====
+        const savedTheme = localStorage.getItem('ki-theme') || 'orange';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('active');
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                opt.classList.remove('active');
+                if (opt.classList.contains('theme-' + localStorage.getItem('ki-theme'))) {
+                    opt.classList.add('active');
+                }
+            });
+        }
+        function closeSettings() { document.getElementById('settingsModal').classList.remove('active'); }
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('ki-theme', theme);
+            document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        document.getElementById('settingsModal').addEventListener('click', function(e) {
+            if (e.target === this) closeSettings();
+        });
+
+        // ===== ЗМЕЙКА =====
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const CELL = 20;
+        const COLS = canvas.width / CELL;
+        const ROWS = canvas.height / CELL;
+
+        let snake, dir, nextDir, food, score, best, speed, gameLoop, paused, running;
+        best = parseInt(localStorage.getItem('ki-snake-best') || '0');
+        document.getElementById('best').textContent = best;
+
+        function resetGame() {
+            snake = [{x: 10, y: 10}, {x: 9, y: 10}, {x: 8, y: 10}];
+            dir = {x: 1, y: 0};
+            nextDir = {x: 1, y: 0};
+            score = 0;
+            speed = 130;
+            paused = false;
+            running = false;
+            placeFood();
+            document.getElementById('score').textContent = '0';
+            draw();
+        }
+
+        function placeFood() {
+            let newFood;
+            do {
+                newFood = {
+                    x: Math.floor(Math.random() * COLS),
+                    y: Math.floor(Math.random() * ROWS)
+                };
+            } while (snake.some(s => s.x === newFood.x && s.y === newFood.y));
+            food = newFood;
+        }
+
+        function draw() {
+            // Фон
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Сетка (едва заметная)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= COLS; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * CELL, 0);
+                ctx.lineTo(i * CELL, canvas.height);
+                ctx.stroke();
+            }
+            for (let i = 0; i <= ROWS; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, i * CELL);
+                ctx.lineTo(canvas.width, i * CELL);
+                ctx.stroke();
+            }
+
+            // Еда (яблоко)
+            ctx.fillStyle = '#FF3B30';
+            ctx.beginPath();
+            ctx.arc(food.x * CELL + CELL/2, food.y * CELL + CELL/2, CELL/2 - 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Блик на яблоке
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.beginPath();
+            ctx.arc(food.x * CELL + CELL/2 - 3, food.y * CELL + CELL/2 - 3, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Змейка
+            snake.forEach((seg, i) => {
+                const isHead = i === 0;
+                ctx.fillStyle = isHead ? '#FF8C00' : '#E85D00';
+                ctx.beginPath();
+                ctx.roundRect(
+                    seg.x * CELL + 2,
+                    seg.y * CELL + 2,
+                    CELL - 4,
+                    CELL - 4,
+                    isHead ? 7 : 5
+                );
+                ctx.fill();
+
+                // Глаза на голове
+                if (isHead) {
+                    ctx.fillStyle = '#fff';
+                    const eyeSize = 3;
+                    let ex1, ey1, ex2, ey2;
+                    if (dir.x === 1) { ex1 = 13; ey1 = 7; ex2 = 13; ey2 = 13; }
+                    else if (dir.x === -1) { ex1 = 7; ey1 = 7; ex2 = 7; ey2 = 13; }
+                    else if (dir.y === 1) { ex1 = 7; ey1 = 13; ex2 = 13; ey2 = 13; }
+                    else { ex1 = 7; ey1 = 7; ex2 = 13; ey2 = 7; }
+
+                    ctx.beginPath();
+                    ctx.arc(seg.x * CELL + ex1, seg.y * CELL + ey1, eyeSize, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(seg.x * CELL + ex2, seg.y * CELL + ey2, eyeSize, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Зрачки
+                    ctx.fillStyle = '#000';
+                    ctx.beginPath();
+                    ctx.arc(seg.x * CELL + ex1 + dir.x, seg.y * CELL + ey1 + dir.y, 1.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(seg.x * CELL + ex2 + dir.x, seg.y * CELL + ey2 + dir.y, 1.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+        }
+
+        // Полифилл для roundRect (старые браузеры)
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                if (w < 2 * r) r = w / 2;
+                if (h < 2 * r) r = h / 2;
+                this.beginPath();
+                this.moveTo(x + r, y);
+                this.arcTo(x + w, y, x + w, y + h, r);
+                this.arcTo(x + w, y + h, x, y + h, r);
+                this.arcTo(x, y + h, x, y, r);
+                this.arcTo(x, y, x + w, y, r);
+                this.closePath();
+                return this;
+            };
+        }
+
+        function step() {
+            if (paused) return;
+
+            dir = nextDir;
+            const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+
+            // Столкновение со стенами
+            if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) {
+                return gameOver();
+            }
+
+            // Столкновение с собой
+            if (snake.some(s => s.x === head.x && s.y === head.y)) {
+                return gameOver();
+            }
+
+            snake.unshift(head);
+
+            // Съел еду?
+            if (head.x === food.x && head.y === food.y) {
+                score += 10;
+                document.getElementById('score').textContent = score;
+                placeFood();
+                // Ускорение
+                if (speed > 60) speed -= 3;
+            } else {
+                snake.pop();
+            }
+
+            draw();
+        }
+
+        function gameOver() {
+            running = false;
+            clearInterval(gameLoop);
+            if (score > best) {
+                best = score;
+                localStorage.setItem('ki-snake-best', best);
+                document.getElementById('best').textContent = best;
+            }
+            document.getElementById('gameOverText').textContent = 'Твой счёт: ' + score;
+            document.getElementById('gameOverOverlay').classList.add('active');
+        }
+
+        function startGame() {
+            document.getElementById('startOverlay').classList.remove('active');
+            document.getElementById('gameOverOverlay').classList.remove('active');
+            document.getElementById('pauseOverlay').classList.remove('active');
+            resetGame();
+            running = true;
+            clearInterval(gameLoop);
+            gameLoop = setInterval(step, speed);
+            // Адаптивная скорость
+            const speedUpdater = setInterval(() => {
+                if (!running) { clearInterval(speedUpdater); return; }
+                clearInterval(gameLoop);
+                gameLoop = setInterval(step, speed);
+            }, 1000);
+        }
+
+        function togglePause() {
+            if (!running) return;
+            paused = !paused;
+            document.getElementById('pauseOverlay').classList.toggle('active', paused);
+        }
+
+        function changeDir(x, y) {
+            if (!running) return;
+            // Нельзя развернуться на 180°
+            if (x === -dir.x && y === -dir.y) return;
+            if (x === dir.x && y === dir.y) return;
+            nextDir = {x, y};
+        }
+
+        // Клавиатура
+        document.addEventListener('keydown', (e) => {
+            const keyMap = {
+                'ArrowUp': [0, -1], 'ArrowDown': [0, 1],
+                'ArrowLeft': [-1, 0], 'ArrowRight': [1, 0],
+                'w': [0, -1], 's': [0, 1], 'a': [-1, 0], 'd': [1, 0],
+                'W': [0, -1], 'S': [0, 1], 'A': [-1, 0], 'D': [1, 0]
+            };
+            if (keyMap[e.key]) {
+                e.preventDefault();
+                changeDir(...keyMap[e.key]);
+            }
+            if (e.key === ' ') { e.preventDefault(); togglePause(); }
+        });
+
+        // Свайпы
+        let touchStartX = 0, touchStartY = 0;
+        canvas.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, {passive: true});
+
+        canvas.addEventListener('touchend', (e) => {
+            const dx = e.changedTouches[0].clientX - touchStartX;
+            const dy = e.changedTouches[0].clientY - touchStartY;
+            if (Math.abs(dx) < 30 && Math.abs(dy) < 30) return;
+            if (Math.abs(dx) > Math.abs(dy)) {
+                changeDir(dx > 0 ? 1 : -1, 0);
+            } else {
+                changeDir(0, dy > 0 ? 1 : -1);
+            }
+        }, {passive: true});
+
+        // Инициализация
+        resetGame();
+    </script>
+</body>
+</html>
