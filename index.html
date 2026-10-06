@@ -1,1 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ki Tools — Полезные инструменты и игры</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <a href="index.html" class="logo">Ki<span>.</span>Tools</a>
+        <nav class="nav">
+            <a href="tools.html">🛠️ Инструменты</a>
+            <a href="game.html">🎮 Игры</a>
+            <button class="settings-btn" onclick="openSettings()">⚙️</button>
+        </nav>
+    </header>
 
+    <!-- Контент -->
+    <div class="container">
+        <div class="card" style="text-align: center;">
+            <h2 style="font-size: 32px; margin-bottom: 15px;">Добро пожаловать в Ki Tools 🍊</h2>
+            <p style="font-size: 16px; margin-bottom: 10px;">
+                Твой набор полезных инструментов и мини-игр в одном месте.
+            </p>
+            <p>Всё работает прямо в браузере, ничего не нужно устанавливать.</p>
+        </div>
+
+        <div class="grid">
+            <a href="tools.html" class="tile">
+                <span class="tile-icon">🛠️</span>
+                <span class="tile-title">Инструменты</span>
+                <span class="tile-desc">Генератор паролей, калькулятор, конвертер</span>
+            </a>
+
+            <a href="game.html" class="tile">
+                <span class="tile-icon">🎮</span>
+                <span class="tile-title">Игры</span>
+                <span class="tile-desc">Змейка и другие мини-игры</span>
+            </a>
+
+            <a href="#" class="tile">
+                <span class="tile-icon">📖</span>
+                <span class="tile-title">О проекте</span>
+                <span class="tile-desc">Скоро — страница с описанием</span>
+            </a>
+
+            <a href="https://github.com" class="tile">
+                <span class="tile-icon">💻</span>
+                <span class="tile-title">GitHub</span>
+                <span class="tile-desc">Исходный код проекта</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <p>© 2026 Ki Tools · Сделано с 🍊</p>
+    </footer>
+
+    <!-- Модальное окно настроек -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <h2>🎨 Выбери тему</h2>
+            <div class="theme-grid">
+                <div class="theme-option theme-orange" onclick="setTheme('orange')">Оранжевая</div>
+                <div class="theme-option theme-dark" onclick="setTheme('dark')">Тёмная</div>
+                <div class="theme-option theme-light" onclick="setTheme('light')">Светлая</div>
+                <div class="theme-option theme-blue" onclick="setTheme('blue')">Синяя</div>
+                <div class="theme-option theme-green" onclick="setTheme('green')">Зелёная</div>
+            </div>
+            <button class="close-btn" onclick="closeSettings()">Готово</button>
+        </div>
+    </div>
+
+    <script>
+        // Загружаем сохранённую тему
+        const savedTheme = localStorage.getItem('ki-theme') || 'orange';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('active');
+            // Подсвечиваем активную тему
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                opt.classList.remove('active');
+                if (opt.classList.contains('theme-' + localStorage.getItem('ki-theme'))) {
+                    opt.classList.add('active');
+                }
+            });
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('active');
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('ki-theme', theme);
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Закрытие по клику вне окна
+        document.getElementById('settingsModal').addEventListener('click', function(e) {
+            if (e.target === this) closeSettings();
+        });
+    </script>
+</body>
+</html>
