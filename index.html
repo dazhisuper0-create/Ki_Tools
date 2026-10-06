@@ -8,10 +8,9 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Шапка -->
     <header class="header">
         <a href="index.html" class="logo">Ki<span>.</span>Tools</a>
-               <nav class="nav">
+        <nav class="nav">
             <a href="tools.html">🛠️ Инструменты</a>
             <a href="game.html">🎮 Игры</a>
             <a href="site.html">📖 О проекте</a>
@@ -19,7 +18,6 @@
         </nav>
     </header>
 
-    <!-- Контент -->
     <div class="container">
         <div class="card" style="text-align: center;">
             <h2 style="font-size: 32px; margin-bottom: 15px;">Добро пожаловать в Ki Tools 🍊</h2>
@@ -39,16 +37,16 @@
             <a href="game.html" class="tile">
                 <span class="tile-icon">🎮</span>
                 <span class="tile-title">Игры</span>
-                <span class="tile-desc">Змейка и другие мини-игры</span>
+                <span class="tile-desc">Змейка, 2048, Крестики-нолики</span>
             </a>
 
-            <a href="#" class="tile">
+            <a href="site.html" class="tile">
                 <span class="tile-icon">📖</span>
                 <span class="tile-title">О проекте</span>
-                <span class="tile-desc"> — Страница с описанием</span>
+                <span class="tile-desc">Что это и что планируется</span>
             </a>
 
-            <a href="https://github.com" class="tile">
+            <a href="https://github.com/dazhisuper0-create" class="tile">
                 <span class="tile-icon">💻</span>
                 <span class="tile-title">GitHub</span>
                 <span class="tile-desc">Исходный код проекта</span>
@@ -56,12 +54,10 @@
         </div>
     </div>
 
-    <!-- Футер -->
     <footer class="footer">
         <p>© 2026 Ki Tools · Сделано с 🍊</p>
     </footer>
 
-    <!-- Модальное окно настроек -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal">
             <h2>🎨 Выбери тему</h2>
@@ -77,13 +73,11 @@
     </div>
 
     <script>
-        // Загружаем сохранённую тему
         const savedTheme = localStorage.getItem('ki-theme') || 'orange';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
         function openSettings() {
             document.getElementById('settingsModal').classList.add('active');
-            // Подсвечиваем активную тему
             document.querySelectorAll('.theme-option').forEach(opt => {
                 opt.classList.remove('active');
                 if (opt.classList.contains('theme-' + localStorage.getItem('ki-theme'))) {
@@ -105,7 +99,6 @@
             event.target.classList.add('active');
         }
 
-        // Закрытие по клику вне окна
         document.getElementById('settingsModal').addEventListener('click', function(e) {
             if (e.target === this) closeSettings();
         });
