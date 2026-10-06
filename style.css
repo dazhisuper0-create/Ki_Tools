@@ -1,6 +1,5 @@
 /* ===== ПЕРЕМЕННЫЕ ТЕМ ===== */
 :root {
-    /* Оранжевая тема (по умолчанию) */
     --primary: #FF8C00;
     --primary-dark: #E85D00;
     --primary-light: #FFB347;
@@ -13,7 +12,6 @@
     --accent: #2D1B00;
 }
 
-/* Тёмная тема */
 [data-theme="dark"] {
     --primary: #FF8C00;
     --primary-dark: #E85D00;
@@ -27,7 +25,6 @@
     --accent: #FF8C00;
 }
 
-/* Светлая тема */
 [data-theme="light"] {
     --primary: #FF8C00;
     --primary-dark: #E85D00;
@@ -41,7 +38,6 @@
     --accent: #E85D00;
 }
 
-/* Синяя тема */
 [data-theme="blue"] {
     --primary: #2196F3;
     --primary-dark: #1769AA;
@@ -55,7 +51,6 @@
     --accent: #0D47A1;
 }
 
-/* Зелёная тема */
 [data-theme="green"] {
     --primary: #4CAF50;
     --primary-dark: #388E3C;
@@ -67,6 +62,19 @@
     --text-dim: rgba(255, 255, 255, 0.75);
     --shadow: rgba(0, 0, 0, 0.2);
     --accent: #1B5E20;
+}
+
+[data-theme="fish"] {
+    --primary: #00BCD4;
+    --primary-dark: #0097A7;
+    --primary-light: #4DD0E1;
+    --bg: linear-gradient(180deg, #006064 0%, #00838F 30%, #00ACC1 70%, #26C6DA 100%);
+    --card-bg: rgba(255, 255, 255, 0.12);
+    --card-border: rgba(255, 255, 255, 0.25);
+    --text: #FFFFFF;
+    --text-dim: rgba(255, 255, 255, 0.75);
+    --shadow: rgba(0, 0, 0, 0.3);
+    --accent: #00E5FF;
 }
 
 /* ===== БАЗОВЫЕ СТИЛИ ===== */
@@ -107,6 +115,8 @@ body {
     border: 1px solid var(--card-border);
     border-radius: 20px;
     animation: slideDown 0.6s ease-out;
+    position: relative;
+    z-index: 1;
 }
 
 @keyframes slideDown {
@@ -147,7 +157,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* ===== КНОПКА НАСТРОЕК ===== */
 .settings-btn {
     background: rgba(255, 255, 255, 0.15);
     border: 1px solid var(--card-border);
@@ -168,7 +177,7 @@ body {
     transform: rotate(45deg);
 }
 
-/* ===== МОДАЛЬНОЕ ОКНО НАСТРОЕК ===== */
+/* ===== МОДАЛЬНОЕ ОКНО ===== */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -238,6 +247,7 @@ body {
 .theme-light { background: linear-gradient(135deg, #FFF3E0, #FFE0B2); color: #2D1B00; }
 .theme-blue { background: linear-gradient(135deg, #2196F3, #1769AA); }
 .theme-green { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
+.theme-fish { background: linear-gradient(135deg, #00BCD4, #006064); }
 
 .close-btn {
     width: 100%;
@@ -261,6 +271,8 @@ body {
 .container {
     max-width: 900px;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 /* ===== КАРТОЧКИ ===== */
@@ -331,12 +343,76 @@ body {
     font-size: 13px;
     color: var(--text-dim);
     animation: fadeIn 1s ease-out 0.5s both;
+    position: relative;
+    z-index: 1;
 }
 
 .footer a {
     color: var(--text);
     text-decoration: none;
     border-bottom: 1px solid var(--text-dim);
+}
+
+/* ===== АКВАРИУМ ===== */
+.aquarium {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+
+[data-theme="fish"] .aquarium {
+    display: block;
+}
+
+.fish {
+    position: absolute;
+    font-size: 32px;
+    opacity: 0.6;
+    animation: swim linear infinite;
+}
+
+.fish:nth-child(1) { top: 15%; animation-duration: 18s; animation-delay: 0s; font-size: 36px; }
+.fish:nth-child(2) { top: 35%; animation-duration: 24s; animation-delay: 3s; font-size: 28px; }
+.fish:nth-child(3) { top: 55%; animation-duration: 20s; animation-delay: 6s; font-size: 40px; }
+.fish:nth-child(4) { top: 75%; animation-duration: 28s; animation-delay: 2s; font-size: 30px; }
+.fish:nth-child(5) { top: 25%; animation-duration: 22s; animation-delay: 8s; font-size: 34px; }
+.fish:nth-child(6) { top: 65%; animation-duration: 26s; animation-delay: 5s; font-size: 26px; }
+
+@keyframes swim {
+    0% { left: -80px; transform: scaleX(1); }
+    49% { transform: scaleX(1); }
+    50% { left: 100%; transform: scaleX(-1); }
+    99% { transform: scaleX(-1); }
+    100% { left: -80px; transform: scaleX(1); }
+}
+
+.bubble-fish {
+    position: absolute;
+    bottom: -30px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    animation: rise linear infinite;
+}
+
+.bubble-fish:nth-child(7) { left: 10%; animation-duration: 8s; animation-delay: 0s; }
+.bubble-fish:nth-child(8) { left: 25%; animation-duration: 11s; animation-delay: 2s; width: 8px; height: 8px; }
+.bubble-fish:nth-child(9) { left: 45%; animation-duration: 9s; animation-delay: 4s; width: 14px; height: 14px; }
+.bubble-fish:nth-child(10) { left: 65%; animation-duration: 12s; animation-delay: 1s; }
+.bubble-fish:nth-child(11) { left: 80%; animation-duration: 10s; animation-delay: 3s; width: 10px; height: 10px; }
+.bubble-fish:nth-child(12) { left: 92%; animation-duration: 13s; animation-delay: 5s; width: 16px; height: 16px; }
+
+@keyframes rise {
+    0% { bottom: -30px; opacity: 0; transform: translateX(0); }
+    10% { opacity: 0.8; }
+    50% { transform: translateX(20px); }
+    90% { opacity: 0.8; }
+    100% { bottom: 100%; opacity: 0; transform: translateX(-10px); }
 }
 
 /* ===== АДАПТИВ ===== */
@@ -372,22 +448,11 @@ body {
 
     .theme-grid { grid-template-columns: repeat(2, 1fr); }
     .modal { padding: 20px; }
+
+    .fish { font-size: 22px !important; }
 }
 
 @media (max-width: 360px) {
     .grid { grid-template-columns: 1fr; }
     .logo { font-size: 20px; }
-}
-/* Тема «Рыбки» */
-[data-theme="fish"] {
-    --primary: #00BCD4;
-    --primary-dark: #0097A7;
-    --primary-light: #4DD0E1;
-    --bg: linear-gradient(180deg, #006064 0%, #00838F 30%, #00ACC1 70%, #26C6DA 100%);
-    --card-bg: rgba(255, 255, 255, 0.12);
-    --card-border: rgba(255, 255, 255, 0.25);
-    --text: #FFFFFF;
-    --text-dim: rgba(255, 255, 255, 0.75);
-    --shadow: rgba(0, 0, 0, 0.3);
-    --accent: #00E5FF;
 }
