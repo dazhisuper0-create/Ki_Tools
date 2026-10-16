@@ -242,7 +242,41 @@
 
         <div class="tool-section">
             <h2>🔄 Конвертер единиц</h2>
-            <p style="color: var(--text-dim); font-size: 14px;">Скоро: длина, вес, температура.</p>
+
+            <div class="field">
+                <label>Категория</label>
+                <select id="convCategory" onchange="updateConverterUnits()">
+                    <option value="length">📏 Длина</option>
+                    <option value="weight">⚖️ Вес</option>
+                    <option value="temp">🌡️ Температура</option>
+                    <option value="area">📐 Площадь</option>
+                    <option value="volume">🧪 Объём</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Значение</label>
+                <input type="number" id="convInput" value="1" oninput="convertUnits()" placeholder="Введите число">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: end; margin-bottom: 18px;">
+                <div class="field" style="margin-bottom: 0;">
+                    <label>Из</label>
+                    <select id="convFrom" onchange="convertUnits()"></select>
+                </div>
+                <button class="btn btn-secondary" onclick="swapConverter()" style="padding: 12px 16px; font-size: 18px;">⇄</button>
+                <div class="field" style="margin-bottom: 0;">
+                    <label>В</label>
+                    <select id="convTo" onchange="convertUnits()"></select>
+                </div>
+            </div>
+
+            <div class="result-box" id="convResult" style="font-size: 22px;">1 = 1</div>
+
+            <div class="btn-row" style="margin-top: 15px;">
+                <button class="btn btn-secondary" onclick="copyConversion()">📋 Копировать результат</button>
+            </div>
+            <div class="copy-msg" id="convCopyMsg">✅ Результат скопирован!</div>
         </div>
 
     </div>
@@ -261,6 +295,7 @@
                 <div class="theme-option theme-blue" onclick="setTheme('blue')">Синяя</div>
                 <div class="theme-option theme-green" onclick="setTheme('green')">Зелёная</div>
                 <div class="theme-option theme-fish" onclick="setTheme('fish')">🐠 Рыбки</div>
+                <div class="theme-option theme-red" onclick="setTheme('red')">🔴 Красная</div>
             </div>
             <button class="close-btn" onclick="closeSettings()">Готово</button>
         </div>
@@ -359,6 +394,150 @@
                 calcExpr = '';
             }
         }
+
+        // ===== КОНВЕРТЕР ЕДИНИЦ =====
+        const CONV_UNITS = {
+            length: {
+                name: 'Длина',
+                units: {
+                    'mm': { name: 'Миллиметры', factor: 0.001 },
+                    'cm': { name: 'Сантиметры', factor: 0.01 },
+                    'm':  { name: 'Метры', factor: 1 },
+                    'km': { name: 'Километры', factor: 1000 },
+                    'in': { name: 'Дюймы', factor: 0.0254 },
+                    'ft': { name: 'Футы', factor: 0.3048 },
+                    'yd': { name: 'Ярды', factor: 0.9144 },
+                    'mi': { name: 'Мили', factor: 1609.344 }
+                }
+            },
+            weight: {
+                name: 'Вес',
+                units: {
+                    'mg': { name: 'Миллиграммы', factor: 0.000001 },
+                    'g':  { name: 'Граммы', factor: 0.001 },
+                    'kg': { name: 'Килограммы', factor: 1 },
+                    't':  { name: 'Тонны', factor: 1000 },
+                    'oz': { name: 'Унции', factor: 0.0283495 },
+                    'lb': { name: 'Фунты', factor: 0.453592 }
+                }
+            },
+            temp: {
+                name: 'Температура',
+                units: {
+                    'c': { name: 'Цельсий' },
+                    'f': { name: 'Фаренгейт' },
+                    'k': { name: 'Кельвин' }
+                }
+            },
+            area: {
+                name: 'Площадь',
+                units: {
+                    'mm2': { name: 'мм²', factor: 0.000001 },
+                    'cm2': { name: 'см²', factor: 0.0001 },
+                    'm2':  { name: 'м²', factor: 1 },
+                    'km2': { name: 'км²', factor: 1000000 },
+                    'ha':  { name: 'Гектары', factor: 10000 },
+                    'ac':  { name: 'Акры', factor: 4046.86 }
+                }
+            },
+            volume: {
+                name: 'Объём',
+                units: {
+                    'ml': { name: 'Миллилитры', factor: 0.001 },
+                    'l':  { name: 'Литры', factor: 1 },
+                    'm3': { name: 'м³', factor: 1000 },
+                    'gal': { name: 'Галлоны (US)', factor: 3.78541 },
+                    'pt': { name: 'Пинты (US)', factor: 0.473176 }
+                }
+            }
+        };
+
+        function updateConverterUnits() {
+            const category = document.getElementById('convCategory').value;
+            const units = CONV_UNITS[category].units;
+            const fromSelect = document.getElementById('convFrom');
+            const toSelect = document.getElementById('convTo');
+
+            fromSelect.innerHTML = '';
+            toSelect.innerHTML = '';
+
+            const keys = Object.keys(units);
+            keys.forEach((key) => {
+                const opt1 = document.createElement('option');
+                opt1.value = key;
+                opt1.textContent = units[key].name;
+                fromSelect.appendChild(opt1);
+
+                const opt2 = document.createElement('option');
+                opt2.value = key;
+                opt2.textContent = units[key].name;
+                toSelect.appendChild(opt2);
+            });
+
+            fromSelect.value = keys[0];
+            toSelect.value = keys[1] || keys[0];
+            convertUnits();
+        }
+
+        function convertUnits() {
+            const category = document.getElementById('convCategory').value;
+            const from = document.getElementById('convFrom').value;
+            const to = document.getElementById('convTo').value;
+            const input = parseFloat(document.getElementById('convInput').value);
+
+            if (isNaN(input)) {
+                document.getElementById('convResult').textContent = '—';
+                return;
+            }
+
+            let result;
+
+            if (category === 'temp') {
+                let celsius;
+                if (from === 'c') celsius = input;
+                else if (from === 'f') celsius = (input - 32) * 5 / 9;
+                else celsius = input - 273.15;
+
+                if (to === 'c') result = celsius;
+                else if (to === 'f') result = celsius * 9 / 5 + 32;
+                else result = celsius + 273.15;
+            } else {
+                const units = CONV_UNITS[category].units;
+                const inBase = input * units[from].factor;
+                result = inBase / units[to].factor;
+            }
+
+            let formatted;
+            if (Math.abs(result) >= 1000000 || (Math.abs(result) < 0.001 && result !== 0)) {
+                formatted = result.toExponential(4);
+            } else {
+                formatted = parseFloat(result.toFixed(6));
+            }
+
+            document.getElementById('convResult').textContent =
+                `${input} ${CONV_UNITS[category].units[from].name} = ${formatted} ${CONV_UNITS[category].units[to].name}`;
+        }
+
+        function swapConverter() {
+            const from = document.getElementById('convFrom');
+            const to = document.getElementById('convTo');
+            const temp = from.value;
+            from.value = to.value;
+            to.value = temp;
+            convertUnits();
+        }
+
+        function copyConversion() {
+            const text = document.getElementById('convResult').textContent;
+            if (text === '—') return;
+            navigator.clipboard.writeText(text).then(() => {
+                const msg = document.getElementById('convCopyMsg');
+                msg.classList.add('show');
+                setTimeout(() => msg.classList.remove('show'), 2000);
+            });
+        }
+
+        updateConverterUnits();
 
         document.addEventListener('keydown', (e) => {
             if (e.key >= '0' && e.key <= '9') calcInput(e.key);
