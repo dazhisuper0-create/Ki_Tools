@@ -77,6 +77,19 @@
     --accent: #00E5FF;
 }
 
+[data-theme="red"] {
+    --primary: #E53935;
+    --primary-dark: #B71C1C;
+    --primary-light: #EF5350;
+    --bg: linear-gradient(135deg, #E53935 0%, #B71C1C 100%);
+    --card-bg: rgba(255, 255, 255, 0.15);
+    --card-border: rgba(255, 255, 255, 0.25);
+    --text: #FFFFFF;
+    --text-dim: rgba(255, 255, 255, 0.75);
+    --shadow: rgba(0, 0, 0, 0.25);
+    --accent: #7F0000;
+}
+
 /* ===== БАЗОВЫЕ СТИЛИ ===== */
 * {
     margin: 0;
@@ -248,6 +261,7 @@ body {
 .theme-blue { background: linear-gradient(135deg, #2196F3, #1769AA); }
 .theme-green { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
 .theme-fish { background: linear-gradient(135deg, #00BCD4, #006064); }
+.theme-red { background: linear-gradient(135deg, #E53935, #B71C1C); }
 
 .close-btn {
     width: 100%;
@@ -418,37 +432,19 @@ body {
 /* ===== АДАПТИВ ===== */
 @media (max-width: 600px) {
     body { padding: 15px; }
-
-    .header {
-        padding: 12px 15px;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
+    .header { padding: 12px 15px; flex-wrap: wrap; gap: 10px; }
     .logo { font-size: 22px; }
-
-    .nav a {
-        font-size: 12px;
-        padding: 6px 12px;
-    }
-
+    .nav a { font-size: 12px; padding: 6px 12px; }
     .card { padding: 20px; }
     .card h2 { font-size: 17px; }
     .card p { font-size: 14px; }
-
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .tile { padding: 16px; }
     .tile-icon { font-size: 26px; }
     .tile-title { font-size: 14px; }
     .tile-desc { font-size: 11px; }
-
     .theme-grid { grid-template-columns: repeat(2, 1fr); }
     .modal { padding: 20px; }
-
     .fish { font-size: 22px !important; }
 }
 
