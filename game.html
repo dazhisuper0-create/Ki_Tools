@@ -7,7 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FF8C00">
-    <link rel="stylesheet" href="style.css?v=4">
+    <link rel="stylesheet" href="style.css?v=8">
     <style>
         .game-section {
             background: var(--card-bg);
@@ -313,7 +313,7 @@
             <div class="btn-row">
                 <button class="btn" onclick="startMines()">🔄 Новая игра</button>
             </div>
-            <p class="hint">Тап — открыть · Долгий тап — флажок 🚩</p>
+            <p class="hint">Двойной тап — флажок 🚩 · Тап по флажку — убрать</p>
         </div>
 
     </div>
@@ -357,7 +357,7 @@
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('ki-theme', theme);
             document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
-            event.target.classList.add('active');
+            if (event && event.target) event.target.classList.add('active');
         }
         document.getElementById('settingsModal').addEventListener('click', function(e) {
             if (e.target === this) closeSettings();
@@ -644,7 +644,7 @@
         }, {passive: true});
         init2048();
 
-        // КРЕСТИКИ-НОЛИКИ (умный ИИ - минимакс)
+        // КРЕСТИКИ-НОЛИКИ
         let tttBoard = ['', '', '', '', '', '', '', '', ''];
         let tttRunning = false;
         let tttPlayerTurn = true;
@@ -790,7 +790,7 @@
         }
         renderTTT();
 
-        // САПЁР
+        // САПЁР (двойной тап — флажок)
         let minesBoard, minesRows = 9, minesCols = 9, minesCount = 10;
         let minesRevealed, minesFlags, minesGameOver, minesTimerInterval, minesTime;
 
@@ -885,28 +885,46 @@
                     `;
                     div.textContent = text;
 
-                    let touchTimer;
+                    // Логика: двойной тап — флажок, обычный тап — открыть/убрать флажок
+                    let tapTimer = null;
+                    let lastTapTime = 0;
+
                     div.addEventListener('click', () => {
                         if (minesGameOver) return;
-                        if (cell.flagged) return;
-                        if (cell.revealed) return;
-                        revealMinesCell(r, c);
-                        renderMines();
-                    });
-                    div.addEventListener('touchstart', (e) => {
-                        touchTimer = setTimeout(() => {
-                            if (!minesGameOver && !cell.revealed) {
-                                cell.flagged = !cell.flagged;
-                                renderMines();
-                            }
-                        }, 500);
-                    }, {passive: true});
-                    div.addEventListener('touchend', () => clearTimeout(touchTimer));
-                    div.addEventListener('contextmenu', (e) => {
-                        e.preventDefault();
-                        if (!minesGameOver && !cell.revealed) {
-                            cell.flagged = !cell.flagged;
+
+                        const now = Date.now();
+
+                        // Если клетка с флажком — обычный тап убирает флажок
+                        if (cell.flagged) {
+                            cell.flagged = false;
                             renderMines();
+                            return;
+                        }
+
+                        // Если клетка открыта — ничего
+                        if (cell.revealed) return;
+
+                        // Проверяем двойной тап
+                        if (now - lastTapTime < 350) {
+                            // Двойной тап — ставим флажок
+                            if (tapTimer) {
+                                clearTimeout(tapTimer);
+                                tapTimer = null;
+                            }
+                            cell.flagged = true;
+                            renderMines();
+                            lastTapTime = 0;
+                        } else {
+                            // Одиночный тап — ждём, вдруг будет второй
+                            lastTapTime = now;
+                            if (tapTimer) clearTimeout(tapTimer);
+                            tapTimer = setTimeout(() => {
+                                if (!cell.flagged && !cell.revealed && !minesGameOver) {
+                                    revealMinesCell(r, c);
+                                    renderMines();
+                                }
+                                tapTimer = null;
+                            }, 350);
                         }
                     });
 
