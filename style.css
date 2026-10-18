@@ -90,6 +90,19 @@
     --accent: #7F0000;
 }
 
+[data-theme="space"] {
+    --primary: #7C4DFF;
+    --primary-dark: #536DFE;
+    --primary-light: #B388FF;
+    --bg: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+    --card-bg: rgba(255, 255, 255, 0.08);
+    --card-border: rgba(255, 255, 255, 0.15);
+    --text: #FFFFFF;
+    --text-dim: rgba(255, 255, 255, 0.6);
+    --shadow: rgba(0, 0, 0, 0.5);
+    --accent: #B388FF;
+}
+
 /* ===== БАЗОВЫЕ СТИЛИ ===== */
 * {
     margin: 0;
@@ -113,6 +126,31 @@ body {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
+}
+
+/* ===== ЗВЁЗДЫ ДЛЯ КОСМОСА ===== */
+[data-theme="space"] body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 90px 40px, #ddd, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 160px 120px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 230px 80px, #eee, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 300px 150px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 350px 50px, #ddd, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 400px 250px;
+    animation: twinkle 4s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
 }
 
 /* ===== ШАПКА ===== */
@@ -262,6 +300,7 @@ body {
 .theme-green { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
 .theme-fish { background: linear-gradient(135deg, #00BCD4, #006064); }
 .theme-red { background: linear-gradient(135deg, #E53935, #B71C1C); }
+.theme-space { background: linear-gradient(135deg, #7C4DFF, #1B2735); }
 
 .close-btn {
     width: 100%;
