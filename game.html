@@ -7,7 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FF8C00">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=4">
     <style>
         .game-section {
             background: var(--card-bg);
@@ -294,6 +294,28 @@
             <p class="hint">Тапни по клетке, чтобы поставить ❌</p>
         </div>
 
+        <!-- САПЁР -->
+        <div class="game-section">
+            <h2>💣 Сапёр</h2>
+            <div class="score-row">
+                <div class="score-box">
+                    <div class="score-label">Мины</div>
+                    <div class="score-value" id="minesLeft">10</div>
+                </div>
+                <div class="score-box">
+                    <div class="score-label">Время</div>
+                    <div class="score-value" id="minesTimer">0</div>
+                </div>
+            </div>
+            <div class="canvas-wrap" style="overflow-x: auto;">
+                <div id="minesBoard" style="display: grid; gap: 4px; padding: 10px; background: rgba(0,0,0,0.25); border-radius: 18px; border: 2px solid var(--card-border); touch-action: manipulation;"></div>
+            </div>
+            <div class="btn-row">
+                <button class="btn" onclick="startMines()">🔄 Новая игра</button>
+            </div>
+            <p class="hint">Тап — открыть · Долгий тап — флажок 🚩</p>
+        </div>
+
     </div>
 
     <footer class="footer">
@@ -305,7 +327,7 @@
             <h2>🎨 Выбери тему</h2>
             <div class="theme-grid">
                 <div class="theme-option theme-orange" onclick="setTheme('orange')">🟠 Оранжевая</div>
-                <div class="theme-option theme-dark" onclick="setTheme('dark')">⚫ Тёмная</div>
+                <div class="theme-option theme-dark" onclick="setTheme('dark')">Тёмная</div>
                 <div class="theme-option theme-light" onclick="setTheme('light')">⚪ Светлая</div>
                 <div class="theme-option theme-blue" onclick="setTheme('blue')">🔵 Синяя</div>
                 <div class="theme-option theme-green" onclick="setTheme('green')">🟢 Зелёная</div>
@@ -622,7 +644,7 @@
         }, {passive: true});
         init2048();
 
-        // КРЕСТИКИ-НОЛИКИ
+        // КРЕСТИКИ-НОЛИКИ (умный ИИ - минимакс)
         let tttBoard = ['', '', '', '', '', '', '', '', ''];
         let tttRunning = false;
         let tttPlayerTurn = true;
@@ -668,35 +690,68 @@
             tttPlayerTurn = false;
             setTimeout(tttAIMove, 400);
         }
+        function checkWinner(b) {
+            for (const line of WIN_LINES) {
+                const [a, c, d] = line;
+                if (b[a] && b[a] === b[c] && b[a] === b[d]) return b[a];
+            }
+            return null;
+        }
         function tttAIMove() {
             if (!tttRunning) return;
-            let move = findBestMove('O');
-            if (move === -1) move = findBestMove('X');
-            if (move === -1 && tttBoard[4] === '') move = 4;
-            if (move === -1) {
-                const corners = [0, 2, 6, 8].filter(i => tttBoard[i] === '');
-                if (corners.length > 0) move = corners[Math.floor(Math.random() * corners.length)];
+            function minimax(board, depth, isMaximizing, alpha, beta) {
+                const winner = checkWinner(board);
+                if (winner === 'O') return 10 - depth;
+                if (winner === 'X') return depth - 10;
+                if (board.every(v => v !== '')) return 0;
+                if (isMaximizing) {
+                    let best = -Infinity;
+                    for (let i = 0; i < 9; i++) {
+                        if (board[i] === '') {
+                            board[i] = 'O';
+                            const score = minimax(board, depth + 1, false, alpha, beta);
+                            board[i] = '';
+                            best = Math.max(best, score);
+                            alpha = Math.max(alpha, score);
+                            if (beta <= alpha) break;
+                        }
+                    }
+                    return best;
+                } else {
+                    let best = Infinity;
+                    for (let i = 0; i < 9; i++) {
+                        if (board[i] === '') {
+                            board[i] = 'X';
+                            const score = minimax(board, depth + 1, true, alpha, beta);
+                            board[i] = '';
+                            best = Math.min(best, score);
+                            beta = Math.min(beta, score);
+                            if (beta <= alpha) break;
+                        }
+                    }
+                    return best;
+                }
             }
-            if (move === -1) {
-                const empty = tttBoard.map((v, i) => v === '' ? i : -1).filter(i => i !== -1);
-                if (empty.length > 0) move = empty[Math.floor(Math.random() * empty.length)];
+            let bestScore = -Infinity;
+            let bestMove = -1;
+            for (let i = 0; i < 9; i++) {
+                if (tttBoard[i] === '') {
+                    tttBoard[i] = 'O';
+                    const score = minimax([...tttBoard], 0, false, -Infinity, Infinity);
+                    tttBoard[i] = '';
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMove = i;
+                    }
+                }
             }
-            if (move !== -1) {
-                tttBoard[move] = 'O';
+            if (bestMove !== -1) {
+                tttBoard[bestMove] = 'O';
                 renderTTT();
                 if (checkTTTWin('O')) { endTTT('loss'); return; }
                 if (isTTTFull()) { endTTT('draw'); return; }
             }
             tttPlayerTurn = true;
-        }
-        function findBestMove(player) {
-            for (const line of WIN_LINES) {
-                const values = line.map(i => tttBoard[i]);
-                const countPlayer = values.filter(v => v === player).length;
-                const countEmpty = values.filter(v => v === '').length;
-                if (countPlayer === 2 && countEmpty === 1) return line[values.indexOf('')];
-            }
-            return -1;
         }
         function checkTTTWin(player) { return WIN_LINES.some(line => line.every(i => tttBoard[i] === player)); }
         function isTTTFull() { return tttBoard.every(v => v !== ''); }
@@ -734,6 +789,175 @@
             renderTTT();
         }
         renderTTT();
+
+        // САПЁР
+        let minesBoard, minesRows = 9, minesCols = 9, minesCount = 10;
+        let minesRevealed, minesFlags, minesGameOver, minesTimerInterval, minesTime;
+
+        function startMines() {
+            minesBoard = [];
+            minesRevealed = [];
+            minesFlags = [];
+            minesGameOver = false;
+            minesTime = 0;
+            clearInterval(minesTimerInterval);
+            document.getElementById('minesTimer').textContent = '0';
+            document.getElementById('minesLeft').textContent = minesCount;
+
+            for (let r = 0; r < minesRows; r++) {
+                minesBoard[r] = [];
+                minesRevealed[r] = [];
+                minesFlags[r] = [];
+                for (let c = 0; c < minesCols; c++) {
+                    minesBoard[r][c] = { mine: false, count: 0, revealed: false, flagged: false };
+                    minesRevealed[r][c] = false;
+                    minesFlags[r][c] = false;
+                }
+            }
+
+            let placed = 0;
+            while (placed < minesCount) {
+                const r = Math.floor(Math.random() * minesRows);
+                const c = Math.floor(Math.random() * minesCols);
+                if (!minesBoard[r][c].mine) {
+                    minesBoard[r][c].mine = true;
+                    placed++;
+                }
+            }
+
+            for (let r = 0; r < minesRows; r++) {
+                for (let c = 0; c < minesCols; c++) {
+                    if (minesBoard[r][c].mine) continue;
+                    let count = 0;
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dc = -1; dc <= 1; dc++) {
+                            const nr = r + dr, nc = c + dc;
+                            if (nr >= 0 && nr < minesRows && nc >= 0 && nc < minesCols && minesBoard[nr][nc].mine) count++;
+                        }
+                    }
+                    minesBoard[r][c].count = count;
+                }
+            }
+
+            renderMines();
+            minesTimerInterval = setInterval(() => {
+                if (!minesGameOver) {
+                    minesTime++;
+                    document.getElementById('minesTimer').textContent = minesTime;
+                }
+            }, 1000);
+        }
+
+        function renderMines() {
+            const boardEl = document.getElementById('minesBoard');
+            boardEl.style.gridTemplateColumns = `repeat(${minesCols}, 36px)`;
+            boardEl.innerHTML = '';
+            for (let r = 0; r < minesRows; r++) {
+                for (let c = 0; c < minesCols; c++) {
+                    const cell = minesBoard[r][c];
+                    const div = document.createElement('div');
+                    const size = 36;
+                    let bg = 'rgba(255,255,255,0.1)';
+                    let text = '';
+                    let color = '#fff';
+
+                    if (cell.revealed) {
+                        bg = 'rgba(0,0,0,0.3)';
+                        if (cell.mine) { text = '💣'; }
+                        else if (cell.count > 0) {
+                            text = cell.count;
+                            const colors = ['', '#4FC3F7', '#81C784', '#FFB74D', '#E57373', '#BA68C8', '#F06292', '#A1887F', '#90A4AE'];
+                            color = colors[cell.count] || '#fff';
+                        }
+                    } else if (cell.flagged) {
+                        text = '🚩';
+                    }
+
+                    div.style.cssText = `
+                        width: ${size}px; height: ${size}px;
+                        background: ${bg};
+                        border-radius: 6px;
+                        display: flex; align-items: center; justify-content: center;
+                        font-weight: 900; font-size: 16px; color: ${color};
+                        cursor: pointer; user-select: none;
+                        transition: background 0.1s;
+                        border: 1px solid rgba(255,255,255,0.05);
+                    `;
+                    div.textContent = text;
+
+                    let touchTimer;
+                    div.addEventListener('click', () => {
+                        if (minesGameOver) return;
+                        if (cell.flagged) return;
+                        if (cell.revealed) return;
+                        revealMinesCell(r, c);
+                        renderMines();
+                    });
+                    div.addEventListener('touchstart', (e) => {
+                        touchTimer = setTimeout(() => {
+                            if (!minesGameOver && !cell.revealed) {
+                                cell.flagged = !cell.flagged;
+                                renderMines();
+                            }
+                        }, 500);
+                    }, {passive: true});
+                    div.addEventListener('touchend', () => clearTimeout(touchTimer));
+                    div.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        if (!minesGameOver && !cell.revealed) {
+                            cell.flagged = !cell.flagged;
+                            renderMines();
+                        }
+                    });
+
+                    boardEl.appendChild(div);
+                }
+            }
+        }
+
+        function revealMinesCell(r, c) {
+            const cell = minesBoard[r][c];
+            if (cell.revealed || cell.flagged) return;
+            cell.revealed = true;
+
+            if (cell.mine) {
+                minesGameOver = true;
+                clearInterval(minesTimerInterval);
+                for (let i = 0; i < minesRows; i++) {
+                    for (let j = 0; j < minesCols; j++) {
+                        if (minesBoard[i][j].mine) minesBoard[i][j].revealed = true;
+                    }
+                }
+                renderMines();
+                alert('💥 Ты подорвался! Игра окончена.');
+                return;
+            }
+
+            if (cell.count === 0) {
+                for (let dr = -1; dr <= 1; dr++) {
+                    for (let dc = -1; dc <= 1; dc++) {
+                        const nr = r + dr, nc = c + dc;
+                        if (nr >= 0 && nr < minesRows && nc >= 0 && nc < minesCols) {
+                            revealMinesCell(nr, nc);
+                        }
+                    }
+                }
+            }
+
+            let safeRevealed = 0, totalSafe = minesRows * minesCols - minesCount;
+            for (let i = 0; i < minesRows; i++) {
+                for (let j = 0; j < minesCols; j++) {
+                    if (minesBoard[i][j].revealed && !minesBoard[i][j].mine) safeRevealed++;
+                }
+            }
+            if (safeRevealed === totalSafe && !minesGameOver) {
+                minesGameOver = true;
+                clearInterval(minesTimerInterval);
+                alert('🎉 Победа! Ты нашёл все безопасные клетки!');
+            }
+        }
+
+        startMines();
     </script>
 </body>
 </html>
