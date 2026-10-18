@@ -7,7 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FF8C00">
-    <link rel="stylesheet" href="style.css?v=8">
+    <link rel="stylesheet" href="style.css?v=9">
     <style>
         .game-section {
             background: var(--card-bg);
@@ -313,7 +313,7 @@
             <div class="btn-row">
                 <button class="btn" onclick="startMines()">🔄 Новая игра</button>
             </div>
-            <p class="hint">Двойной тап — флажок 🚩 · Тап по флажку — убрать</p>
+            <p class="hint">ПК: левая — открыть, правая — флажок · Телефон: двойной тап — флажок</p>
         </div>
 
     </div>
@@ -790,14 +790,12 @@
         }
         renderTTT();
 
-        // САПЁР (двойной тап — флажок)
+        // САПЁР
         let minesBoard, minesRows = 9, minesCols = 9, minesCount = 10;
-        let minesRevealed, minesFlags, minesGameOver, minesTimerInterval, minesTime;
+        let minesGameOver, minesTimerInterval, minesTime;
 
         function startMines() {
             minesBoard = [];
-            minesRevealed = [];
-            minesFlags = [];
             minesGameOver = false;
             minesTime = 0;
             clearInterval(minesTimerInterval);
@@ -806,12 +804,8 @@
 
             for (let r = 0; r < minesRows; r++) {
                 minesBoard[r] = [];
-                minesRevealed[r] = [];
-                minesFlags[r] = [];
                 for (let c = 0; c < minesCols; c++) {
                     minesBoard[r][c] = { mine: false, count: 0, revealed: false, flagged: false };
-                    minesRevealed[r][c] = false;
-                    minesFlags[r][c] = false;
                 }
             }
 
@@ -885,28 +879,38 @@
                     `;
                     div.textContent = text;
 
-                    // Логика: двойной тап — флажок, обычный тап — открыть/убрать флажок
+                    // ПК: левая кнопка — открыть/убрать флажок, правая — поставить флажок
+                    // Телефон: двойной тап — флажок, обычный тап — открыть/убрать
                     let tapTimer = null;
                     let lastTapTime = 0;
 
-                    div.addEventListener('click', () => {
+                    div.addEventListener('click', (e) => {
                         if (minesGameOver) return;
 
+                        // ПК (мышь) — левая кнопка
+                        if (e.pointerType === 'mouse' || e.pointerType === 'pen') {
+                            if (cell.flagged) {
+                                cell.flagged = false;
+                                renderMines();
+                                return;
+                            }
+                            if (cell.revealed) return;
+                            revealMinesCell(r, c);
+                            renderMines();
+                            return;
+                        }
+
+                        // Телефон — двойной тап
                         const now = Date.now();
 
-                        // Если клетка с флажком — обычный тап убирает флажок
                         if (cell.flagged) {
                             cell.flagged = false;
                             renderMines();
                             return;
                         }
-
-                        // Если клетка открыта — ничего
                         if (cell.revealed) return;
 
-                        // Проверяем двойной тап
                         if (now - lastTapTime < 350) {
-                            // Двойной тап — ставим флажок
                             if (tapTimer) {
                                 clearTimeout(tapTimer);
                                 tapTimer = null;
@@ -915,7 +919,6 @@
                             renderMines();
                             lastTapTime = 0;
                         } else {
-                            // Одиночный тап — ждём, вдруг будет второй
                             lastTapTime = now;
                             if (tapTimer) clearTimeout(tapTimer);
                             tapTimer = setTimeout(() => {
@@ -925,6 +928,17 @@
                                 }
                                 tapTimer = null;
                             }, 350);
+                        }
+                    });
+
+                    // Правая кнопка мыши — поставить флажок
+                    div.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        if (minesGameOver) return;
+                        if (cell.revealed) return;
+                        if (!cell.flagged) {
+                            cell.flagged = true;
+                            renderMines();
                         }
                     });
 
