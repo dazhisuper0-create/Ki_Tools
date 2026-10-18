@@ -37,6 +37,72 @@
             cursor: pointer;
             transition: background 0.3s, transform 0.3s;
             font-family: inherit;
+                /* Анимированная надпись «Актуальная версия» */
+        .version-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto 25px;
+            padding: 12px 28px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
+            width: fit-content;
+            animation: versionAppear 0.8s ease-out, versionPulse 2.5s ease-in-out 0.8s infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .version-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: versionShine 3s ease-in-out infinite;
+        }
+
+        .version-dot {
+            font-size: 18px;
+            animation: dotBounce 1.5s ease-in-out infinite;
+        }
+
+        .version-text {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text);
+            animation: textGlow 2.5s ease-in-out infinite;
+        }
+
+        @keyframes versionAppear {
+            from { opacity: 0; transform: translateY(-20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes versionPulse {
+            0%, 100% { box-shadow: 0 0 0 rgba(255, 140, 0, 0); transform: scale(1); }
+            50% { box-shadow: 0 0 25px rgba(255, 140, 0, 0.4); transform: scale(1.03); }
+        }
+
+        @keyframes versionShine {
+            0% { left: -100%; }
+            50%, 100% { left: 100%; }
+        }
+
+        @keyframes dotBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-4px) scale(1.15); }
+        }
+
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 0 0 0 rgba(255, 140, 0, 0); }
+            50% { text-shadow: 0 0 15px rgba(255, 140, 0, 0.6); }
         }
         .install-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
         .install-btn.show { display: inline-block; }
@@ -85,6 +151,10 @@
 
     <div class="container">
         <div class="card" style="text-align: center;">
+                    <div class="version-badge">
+            <span class="version-dot">🟠</span>
+            <span class="version-text">Актуальная версия 3.1</span>
+        </div>
             <h2 style="font-size: 32px; margin-bottom: 15px;">Добро пожаловать в Ki Tools 🍊</h2>
             <p style="font-size: 16px; margin-bottom: 10px;">Твой набор полезных инструментов и мини-игр в одном месте.</p>
             <p>Всё работает прямо в браузере, ничего не нужно устанавливать.</p>
@@ -102,7 +172,7 @@
             <a href="game.html" class="tile">
                 <span class="tile-icon">🎮</span>
                 <span class="tile-title">Игры</span>
-                <span class="tile-desc">Змейка, 2048, Крестики-нолики, Сапёр, Пятнашки</span>
+                <span class="tile-desc">Змейка, 2048, Крестики-нолики, Сапёр</span>
             </a>
             <a href="site.html" class="tile">
                 <span class="tile-icon">📖</span>
