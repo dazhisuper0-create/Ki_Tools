@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FF8C00">
     <meta name="description" content="Ki Tools — полезные инструменты и мини-игры в одном месте. От DONATE BOUSE STUDIO.">
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css?v=5">
     <style>
         .studio-badge {
             display: inline-block;
@@ -40,6 +40,21 @@
         }
         .install-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
         .install-btn.show { display: inline-block; }
+
+        @keyframes bounce {
+            from { transform: translateY(0) scale(1); }
+            to { transform: translateY(-15px) scale(1.1); }
+        }
+
+        #easterEggTrigger:hover {
+            color: var(--primary);
+            border-bottom-color: var(--primary) !important;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -82,12 +97,12 @@
             <a href="tools.html" class="tile">
                 <span class="tile-icon">🛠️</span>
                 <span class="tile-title">Инструменты</span>
-                <span class="tile-desc">Генератор паролей, калькулятор, конвертер, конвернтор едениц</span>
+                <span class="tile-desc">Генератор паролей, калькулятор, конвертер</span>
             </a>
             <a href="game.html" class="tile">
                 <span class="tile-icon">🎮</span>
                 <span class="tile-title">Игры</span>
-                <span class="tile-desc">Змейка, 2048, Крестики-нолики, Сапер</span>
+                <span class="tile-desc">Змейка, 2048, Крестики-нолики, Сапёр, Пятнашки</span>
             </a>
             <a href="site.html" class="tile">
                 <span class="tile-icon">📖</span>
@@ -103,15 +118,16 @@
     </div>
 
     <footer class="footer">
-        <p>© 2026 Ki Tools · От <strong>DONATE BOUSE STUDIO</strong> · Сделано с 🍊</p>
+        <p>© 2026 Ki Tools · От <strong>DONATE BOUSE STUDIO</strong> · <span id="easterEggTrigger" style="cursor: pointer; border-bottom: 1px dashed var(--text-dim);">Сделано с 🍊</span></p>
     </footer>
 
+    <!-- Модальное окно тем -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal">
             <h2>🎨 Выбери тему</h2>
             <div class="theme-grid">
                 <div class="theme-option theme-orange" onclick="setTheme('orange')">🟠 Оранжевая</div>
-                <div class="theme-option theme-dark" onclick="setTheme('dark')">⚫ Тёмная</div>
+                <div class="theme-option theme-dark" onclick="setTheme('dark')">Тёмная</div>
                 <div class="theme-option theme-light" onclick="setTheme('light')">⚪ Светлая</div>
                 <div class="theme-option theme-blue" onclick="setTheme('blue')">🔵 Синяя</div>
                 <div class="theme-option theme-green" onclick="setTheme('green')">🟢 Зелёная</div>
@@ -123,7 +139,41 @@
         </div>
     </div>
 
+    <!-- Пасхалка: ввод кода -->
+    <div class="modal-overlay" id="easterEggModal">
+        <div class="modal" style="text-align: center;">
+            <h2>🔐 Секретный код</h2>
+            <p style="font-size: 14px; color: var(--text-dim); margin-bottom: 15px;">
+                Введи код, чтобы открыть секрет
+            </p>
+            <input type="text" id="easterEggInput" placeholder="Введи код..."
+                style="width: 100%; padding: 14px 18px; border-radius: 12px; border: 2px solid var(--card-border); background: rgba(255,255,255,0.1); color: var(--text); font-size: 16px; font-family: inherit; outline: none; text-align: center; margin-bottom: 15px;"
+                onkeydown="if(event.key==='Enter') checkEasterEgg()">
+            <div class="btn-row" style="justify-content: center;">
+                <button class="btn" onclick="checkEasterEgg()">Открыть</button>
+                <button class="btn btn-secondary" onclick="closeEasterEgg()">Отмена</button>
+            </div>
+            <p id="easterEggError" style="font-size: 13px; color: #FF5252; margin-top: 10px; display: none;">❌ Неверный код. Попробуй ещё!</p>
+        </div>
+    </div>
+
+    <!-- Пасхалка: секретное сообщение -->
+    <div class="modal-overlay" id="secretModal">
+        <div class="modal" style="text-align: center;">
+            <div style="font-size: 64px; margin-bottom: 15px; animation: bounce 0.8s infinite alternate;">🎉</div>
+            <h2 style="font-size: 28px; margin-bottom: 10px;">Ты нашёл пасхалку!</h2>
+            <p style="font-size: 16px; color: var(--text-dim); margin-bottom: 20px;">
+                Секретный код: <strong style="color: var(--primary);">SUPER BOOM</strong>
+            </p>
+            <p style="font-size: 14px; color: var(--text-dim); margin-bottom: 20px;">
+                Ты официально крутой 🍊
+            </p>
+            <button class="btn" onclick="closeSecret()">Закрыть</button>
+        </div>
+    </div>
+
     <script>
+        // ===== ТЕМА =====
         const savedTheme = localStorage.getItem('ki-theme') || 'orange';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
@@ -149,6 +199,7 @@
             if (e.target === this) closeSettings();
         });
 
+        // ===== PWA УСТАНОВКА =====
         let deferredPrompt;
         const installBtn = document.getElementById('installBtn');
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -170,7 +221,69 @@
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
+
+        // ===== ПАСХАЛКА =====
+        const easterEggModal = document.getElementById('easterEggModal');
+        const secretModal = document.getElementById('secretModal');
+        const easterEggInput = document.getElementById('easterEggInput');
+        const easterEggError = document.getElementById('easterEggError');
+
+        document.getElementById('easterEggTrigger').addEventListener('click', () => {
+            easterEggModal.classList.add('active');
+            easterEggInput.value = '';
+            easterEggError.style.display = 'none';
+            setTimeout(() => easterEggInput.focus(), 100);
+        });
+
+        function checkEasterEgg() {
+            const code = easterEggInput.value.trim().toLowerCase().replace(/\s+/g, ' ');
+            if (code === 'super boom') {
+                easterEggModal.classList.remove('active');
+                secretModal.classList.add('active');
+                fireConfetti();
+            } else {
+                easterEggError.style.display = 'block';
+                easterEggInput.value = '';
+                easterEggInput.focus();
+            }
+        }
+
+        function closeEasterEgg() {
+            easterEggModal.classList.remove('active');
+        }
+
+        function closeSecret() {
+            secretModal.classList.remove('active');
+        }
+
+        easterEggModal.addEventListener('click', function(e) {
+            if (e.target === this) closeEasterEgg();
+        });
+        secretModal.addEventListener('click', function(e) {
+            if (e.target === this) closeSecret();
+        });
+
+        // Конфетти
+        function fireConfetti() {
+            const colors = ['#FF8C00', '#FFD700', '#FF3B30', '#4CAF50', '#2196F3', '#9C27B0'];
+            for (let i = 0; i < 60; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.cssText = `
+                    position: fixed;
+                    top: -20px;
+                    left: ${Math.random() * 100}%;
+                    width: ${8 + Math.random() * 8}px;
+                    height: ${8 + Math.random() * 8}px;
+                    background: ${colors[Math.floor(Math.random() * colors.length)]};
+                    border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+                    z-index: 9999;
+                    pointer-events: none;
+                    animation: confettiFall ${2 + Math.random() * 2}s linear forwards;
+                `;
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 4000);
+            }
+        }
     </script>
 </body>
 </html>
-
