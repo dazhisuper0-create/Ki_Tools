@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FF8C00">
     <meta name="description" content="Ki Tools — полезные инструменты и мини-игры в одном месте. От DONATE BOUSE STUDIO.">
-    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="style.css?v=6">
     <style>
         .studio-badge {
             display: inline-block;
@@ -37,7 +37,11 @@
             cursor: pointer;
             transition: background 0.3s, transform 0.3s;
             font-family: inherit;
-                /* Анимированная надпись «Актуальная версия» */
+        }
+        .install-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .install-btn.show { display: inline-block; }
+
+        /* Анимированная надпись «Актуальная версия» */
         .version-badge {
             display: flex;
             align-items: center;
@@ -54,7 +58,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .version-badge::before {
             content: '';
             position: absolute;
@@ -65,12 +68,10 @@
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
             animation: versionShine 3s ease-in-out infinite;
         }
-
         .version-dot {
             font-size: 18px;
             animation: dotBounce 1.5s ease-in-out infinite;
         }
-
         .version-text {
             font-size: 14px;
             font-weight: 700;
@@ -79,47 +80,56 @@
             color: var(--text);
             animation: textGlow 2.5s ease-in-out infinite;
         }
-
         @keyframes versionAppear {
             from { opacity: 0; transform: translateY(-20px) scale(0.9); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
-
         @keyframes versionPulse {
             0%, 100% { box-shadow: 0 0 0 rgba(255, 140, 0, 0); transform: scale(1); }
             50% { box-shadow: 0 0 25px rgba(255, 140, 0, 0.4); transform: scale(1.03); }
         }
-
         @keyframes versionShine {
             0% { left: -100%; }
             50%, 100% { left: 100%; }
         }
-
         @keyframes dotBounce {
             0%, 100% { transform: translateY(0) scale(1); }
             50% { transform: translateY(-4px) scale(1.15); }
         }
-
         @keyframes textGlow {
             0%, 100% { text-shadow: 0 0 0 rgba(255, 140, 0, 0); }
             50% { text-shadow: 0 0 15px rgba(255, 140, 0, 0.6); }
         }
-        .install-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
-        .install-btn.show { display: inline-block; }
 
         @keyframes bounce {
             from { transform: translateY(0) scale(1); }
             to { transform: translateY(-15px) scale(1.1); }
         }
-
         #easterEggTrigger:hover {
             color: var(--primary);
             border-bottom-color: var(--primary) !important;
         }
-
         @keyframes confettiFall {
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
             100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* СЕКРЕТНАЯ ТЕМА С КАРТИНКОЙ */
+        [data-theme="secret"] {
+            --primary: #FF8C00;
+            --primary-dark: #E85D00;
+            --primary-light: #FFB347;
+            --bg: url('secret-bg.jpg') center/cover no-repeat fixed;
+            --card-bg: rgba(0, 0, 0, 0.5);
+            --card-border: rgba(255, 255, 255, 0.3);
+            --text: #FFFFFF;
+            --text-dim: rgba(255, 255, 255, 0.8);
+            --shadow: rgba(0, 0, 0, 0.6);
+            --accent: #FFD700;
+        }
+        .theme-secret {
+            background: linear-gradient(135deg, #FFD700, #FF8C00);
+            color: #2D1B00;
         }
     </style>
 </head>
@@ -150,11 +160,12 @@
     </header>
 
     <div class="container">
-        <div class="card" style="text-align: center;">
-                    <div class="version-badge">
+        <div class="version-badge">
             <span class="version-dot">🟠</span>
-            <span class="version-text">Актуальная версия 3.2</span>
+            <span class="version-text">Актуальная версия 3.3</span>
         </div>
+
+        <div class="card" style="text-align: center;">
             <h2 style="font-size: 32px; margin-bottom: 15px;">Добро пожаловать в Ki Tools 🍊</h2>
             <p style="font-size: 16px; margin-bottom: 10px;">Твой набор полезных инструментов и мини-игр в одном месте.</p>
             <p>Всё работает прямо в браузере, ничего не нужно устанавливать.</p>
@@ -197,7 +208,7 @@
             <h2>🎨 Выбери тему</h2>
             <div class="theme-grid">
                 <div class="theme-option theme-orange" onclick="setTheme('orange')">🟠 Оранжевая</div>
-                <div class="theme-option theme-dark" onclick="setTheme('dark')"> ⚫ Тёмная</div>
+                <div class="theme-option theme-dark" onclick="setTheme('dark')">⚫ Тёмная</div>
                 <div class="theme-option theme-light" onclick="setTheme('light')">⚪ Светлая</div>
                 <div class="theme-option theme-blue" onclick="setTheme('blue')">🔵 Синяя</div>
                 <div class="theme-option theme-green" onclick="setTheme('green')">🟢 Зелёная</div>
@@ -227,7 +238,7 @@
         </div>
     </div>
 
-    <!-- Пасхалка: секретное сообщение -->
+    <!-- Пасхалка: секретное сообщение и тема -->
     <div class="modal-overlay" id="secretModal">
         <div class="modal" style="text-align: center;">
             <div style="font-size: 64px; margin-bottom: 15px; animation: bounce 0.8s infinite alternate;">🎉</div>
@@ -236,7 +247,7 @@
                 Секретный код: <strong style="color: var(--primary);">SUPER BOOM</strong>
             </p>
             <p style="font-size: 14px; color: var(--text-dim); margin-bottom: 20px;">
-                Ты официально крутой 🍊
+                Тема с картинкой активирована! 🖼️
             </p>
             <button class="btn" onclick="closeSecret()">Закрыть</button>
         </div>
@@ -263,7 +274,7 @@
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('ki-theme', theme);
             document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
-            event.target.classList.add('active');
+            if (event && event.target) event.target.classList.add('active');
         }
         document.getElementById('settingsModal').addEventListener('click', function(e) {
             if (e.target === this) closeSettings();
@@ -311,6 +322,11 @@
                 easterEggModal.classList.remove('active');
                 secretModal.classList.add('active');
                 fireConfetti();
+                // Активируем секретную тему с картинкой
+                setTimeout(() => {
+                    document.documentElement.setAttribute('data-theme', 'secret');
+                    localStorage.setItem('ki-theme', 'secret');
+                }, 500);
             } else {
                 easterEggError.style.display = 'block';
                 easterEggInput.value = '';
