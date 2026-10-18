@@ -7,7 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FF8C00">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=4">
     <style>
         .about-section {
             background: var(--card-bg);
@@ -196,19 +196,21 @@
             <ul class="feature-list">
                 <li>🔐 Генератор паролей с настройкой длины и символов</li>
                 <li>🧮 Калькулятор с поддержкой клавиатуры</li>
+                <li>🔄 Конвертер единиц (длина, вес, температура, площадь, объём)</li>
                 <li>🐍 Змейка — управление WASD, стрелками, свайпами и кнопками</li>
                 <li>🔢 2048 — классическая головоломка со свайпами</li>
-                <li>❌⭕ Крестики-нолики против ИИ</li>
-                <li>🎨 Семь тем оформления, включая «🐠 Рыбки»</li>
+                <li>❌⭕ Крестики-нолики против умного ИИ (минимакс — не победить!)</li>
+                <li>💣 Сапёр — с флажками и таймером</li>
+                <li>🎨 Семь тем оформления, включая «🐠 Рыбки», «🔴 Красная» и «🌌 Космос»</li>
                 <li>📱 Полная адаптация под телефон</li>
-                <li>🔄 Конвертер единиц</li>
+                <li>📲 Установка на телефон как приложение (PWA)</li>
             </ul>
         </div>
 
         <div class="about-section">
             <h2>🚧 Что планируется</h2>
             <ul class="feature-list">
-                <li>🎮 Новые игры: Пятнашки, Сапёр, Тетрис</li>
+                <li>🎮 Новые игры: Пятнашки, Тетрис</li>
                 <li>📝 Список дел с сохранением</li>
                 <li>⏱️ Таймер Pomodoro</li>
                 <li>🌙 Автоматическое переключение темы по времени суток</li>
@@ -219,11 +221,11 @@
             <h2>📊 В цифрах</h2>
             <div class="stats-grid">
                 <div class="stat-box">
-                    <div class="stat-value">2</div>
+                    <div class="stat-value">3</div>
                     <div class="stat-label">Инструмента</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">3</div>
+                    <div class="stat-value">4</div>
                     <div class="stat-label">Игры</div>
                 </div>
                 <div class="stat-box">
@@ -265,6 +267,7 @@
                 <div class="theme-option theme-green" onclick="setTheme('green')">Зелёная</div>
                 <div class="theme-option theme-fish" onclick="setTheme('fish')">🐠 Рыбки</div>
                 <div class="theme-option theme-red" onclick="setTheme('red')">🔴 Красная</div>
+                <div class="theme-option theme-space" onclick="setTheme('space')">🌌 Космос</div>
             </div>
             <button class="close-btn" onclick="closeSettings()">Готово</button>
         </div>
