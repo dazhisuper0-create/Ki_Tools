@@ -76,7 +76,6 @@
     --shadow: rgba(0, 0, 0, 0.6); --accent: #FFD700;
 }
 
-/* ===== NYAN CAT THEME ===== */
 [data-theme="nyan"] {
     --primary: #FF69B4;
     --primary-dark: #E91E63;
@@ -90,19 +89,386 @@
     --accent: #FFD700;
 }
 
-.theme-nyan {
-    background: linear-gradient(135deg, #FF69B4, #FFD700);
-    color: #1a1a2e;
+/* ===== БАЗОВЫЕ СТИЛИ ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* Анимация для котиков Nyan */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    background-size: 200% 200%;
+    animation: gradientShift 12s ease infinite;
+    min-height: 100vh;
+    color: var(--text);
+    padding: 20px;
+    transition: background 0.5s ease, color 0.3s ease;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ===== ЗВЁЗДЫ ДЛЯ КОСМОСА ===== */
+[data-theme="space"] body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 90px 40px, #ddd, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 160px 120px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 230px 80px, #eee, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 300px 150px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 350px 50px, #ddd, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 400px 250px;
+    animation: twinkle 4s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* ===== ШАПКА ===== */
+.header {
+    max-width: 900px;
+    margin: 0 auto 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    animation: slideDown 0.6s ease-out;
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.logo {
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    color: var(--text);
+    text-decoration: none;
+}
+
+.logo span { color: var(--accent); }
+
+.nav {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.nav a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--card-border);
+    transition: background 0.3s, transform 0.3s;
+}
+
+.nav a:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+.settings-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--card-border);
+    color: var(--text);
+    font-size: 18px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.3s, background 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(45deg);
+}
+
+/* ===== МОДАЛЬНОЕ ОКНО ===== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-overlay.active { display: flex; }
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 30px;
+    max-width: 400px;
+    width: 100%;
+    animation: popIn 0.4s ease-out;
+}
+
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.modal h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.theme-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.theme-option {
+    padding: 15px;
+    border-radius: 15px;
+    border: 2px solid var(--card-border);
+    cursor: pointer;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    transition: transform 0.3s, border-color 0.3s;
+}
+
+.theme-option:hover { transform: scale(1.05); }
+.theme-option.active { border-color: #fff; border-width: 3px; }
+
+.theme-orange { background: linear-gradient(135deg, #FF8C00, #E85D00); }
+.theme-dark { background: linear-gradient(135deg, #2a2a2a, #0d0d0d); }
+.theme-light { background: linear-gradient(135deg, #FFF3E0, #FFE0B2); color: #2D1B00; }
+.theme-blue { background: linear-gradient(135deg, #2196F3, #1769AA); }
+.theme-green { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
+.theme-fish { background: linear-gradient(135deg, #00BCD4, #006064); }
+.theme-red { background: linear-gradient(135deg, #E53935, #B71C1C); }
+.theme-space { background: linear-gradient(135deg, #7C4DFF, #1B2735); }
+.theme-nyan { background: linear-gradient(135deg, #FF69B4, #FFD700); color: #1a1a2e; }
+.theme-secret { background: linear-gradient(135deg, #FFD700, #FF8C00); color: #2D1B00; }
+
+.close-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 50px;
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.close-btn:hover {
+    background: var(--primary-dark);
+    transform: scale(1.02);
+}
+
+/* ===== КОНТЕЙНЕР ===== */
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* ===== КАРТОЧКИ ===== */
+.card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 20px;
+    animation: popIn 0.6s ease-out both;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 40px var(--shadow);
+}
+
+.card h2 {
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+.card p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-dim);
+}
+
+/* ===== СЕТКА ПЛИТОК ===== */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.tile {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 22px;
+    text-decoration: none;
+    color: var(--text);
+    transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    animation: popIn 0.6s ease-out both;
+}
+
+.tile:hover {
+    transform: translateY(-5px) scale(1.02);
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 15px 40px var(--shadow);
+}
+
+.tile-icon { font-size: 32px; }
+.tile-title { font-size: 17px; font-weight: 700; }
+.tile-desc { font-size: 13px; color: var(--text-dim); }
+
+/* ===== ФУТЕР ===== */
+.footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 13px;
+    color: var(--text-dim);
+    animation: fadeIn 1s ease-out 0.5s both;
+    position: relative;
+    z-index: 1;
+}
+
+.footer a {
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--text-dim);
+}
+
+/* ===== АКВАРИУМ ===== */
+.aquarium {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+
+[data-theme="fish"] .aquarium {
+    display: block;
+}
+
+.fish {
+    position: absolute;
+    font-size: 32px;
+    opacity: 0.6;
+    animation: swim linear infinite;
+}
+
+.fish:nth-child(1) { top: 15%; animation-duration: 18s; animation-delay: 0s; font-size: 36px; }
+.fish:nth-child(2) { top: 35%; animation-duration: 24s; animation-delay: 3s; font-size: 28px; }
+.fish:nth-child(3) { top: 55%; animation-duration: 20s; animation-delay: 6s; font-size: 40px; }
+.fish:nth-child(4) { top: 75%; animation-duration: 28s; animation-delay: 2s; font-size: 30px; }
+.fish:nth-child(5) { top: 25%; animation-duration: 22s; animation-delay: 8s; font-size: 34px; }
+.fish:nth-child(6) { top: 65%; animation-duration: 26s; animation-delay: 5s; font-size: 26px; }
+
+@keyframes swim {
+    0% { left: -80px; transform: scaleX(1); }
+    49% { transform: scaleX(1); }
+    50% { left: 100%; transform: scaleX(-1); }
+    99% { transform: scaleX(-1); }
+    100% { left: -80px; transform: scaleX(1); }
+}
+
+.bubble-fish {
+    position: absolute;
+    bottom: -30px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    animation: rise linear infinite;
+}
+
+.bubble-fish:nth-child(7) { left: 10%; animation-duration: 8s; animation-delay: 0s; }
+.bubble-fish:nth-child(8) { left: 25%; animation-duration: 11s; animation-delay: 2s; width: 8px; height: 8px; }
+.bubble-fish:nth-child(9) { left: 45%; animation-duration: 9s; animation-delay: 4s; width: 14px; height: 14px; }
+.bubble-fish:nth-child(10) { left: 65%; animation-duration: 12s; animation-delay: 1s; }
+.bubble-fish:nth-child(11) { left: 80%; animation-duration: 10s; animation-delay: 3s; width: 10px; height: 10px; }
+.bubble-fish:nth-child(12) { left: 92%; animation-duration: 13s; animation-delay: 5s; width: 16px; height: 16px; }
+
+@keyframes rise {
+    0% { bottom: -30px; opacity: 0; transform: translateX(0); }
+    10% { opacity: 0.8; }
+    50% { transform: translateX(20px); }
+    90% { opacity: 0.8; }
+    100% { bottom: 100%; opacity: 0; transform: translateX(-10px); }
+}
+
+/* ===== NYAN CAT ===== */
 .nyan-cat-anim {
+    display: none;
     position: fixed;
     font-size: 32px;
     pointer-events: none;
     z-index: 0;
     animation: nyanFly linear infinite;
     opacity: 0.8;
+}
+
+[data-theme="nyan"] .nyan-cat-anim {
+    display: block;
 }
 
 .nyan-cat-anim:nth-child(1) { top: 15%; animation-duration: 12s; animation-delay: 0s; }
@@ -118,18 +484,26 @@
     100% { left: -80px; transform: scaleX(1); }
 }
 
-/* ===== БАЗОВЫЕ СТИЛИ (без изменений, но добавлены для полноты) ===== */
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg); background-size: 200% 200%; animation: gradientShift 12s ease infinite;
-    min-height: 100vh; color: var(--text); padding: 20px;
-    transition: background 0.5s ease, color 0.3s ease;
+/* ===== АДАПТИВ ===== */
+@media (max-width: 600px) {
+    body { padding: 15px; }
+    .header { padding: 12px 15px; flex-wrap: wrap; gap: 10px; }
+    .logo { font-size: 22px; }
+    .nav a { font-size: 12px; padding: 6px 12px; }
+    .card { padding: 20px; }
+    .card h2 { font-size: 17px; }
+    .card p { font-size: 14px; }
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .tile { padding: 16px; }
+    .tile-icon { font-size: 26px; }
+    .tile-title { font-size: 14px; }
+    .tile-desc { font-size: 11px; }
+    .theme-grid { grid-template-columns: repeat(2, 1fr); }
+    .modal { padding: 20px; }
+    .fish { font-size: 22px !important; }
 }
 
-@keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
-/* ... (остальные стили header, nav, modal, cards, grid, footer, aquarium, space-stars оставь как были) ... */
-/* ВАЖНО: чтобы не раздувать ответ, я не копирую сюда все стили для шапки, карточек, модалок и т.д.
-   Они у тебя уже есть и работают. Я добавил только НОВЫЕ стили для Nyan Cat. */
+@media (max-width: 360px) {
+    .grid { grid-template-columns: 1fr; }
+    .logo { font-size: 20px; }
+}
