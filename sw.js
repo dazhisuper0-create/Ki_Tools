@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ki-tools-v3.5-exteravvv';
+const CACHE_NAME = 'ki-tools-v3.6-alpha';
 const FILES = [
     './', './index.html', './tools.html', './game.html', './site.html',
     './style.css', './favicon.svg', './manifest.json'
