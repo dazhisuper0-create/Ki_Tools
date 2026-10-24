@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FF8C00">
     <meta name="description" content="Ki Tools — полезные инструменты и мини-игры в одном месте. От DONATE BOUSE STUDIO.">
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="style.css?v=11">
     <style>
         .studio-badge {
             display: inline-block;
@@ -41,7 +41,6 @@
         .install-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
         .install-btn.show { display: inline-block; }
 
-        /* Анимированная надпись «Актуальная версия» */
         .version-badge {
             display: flex;
             align-items: center;
@@ -61,58 +60,25 @@
         .version-badge::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
+            top: 0; left: -100%; width: 100%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
             animation: versionShine 3s ease-in-out infinite;
         }
-        .version-dot {
-            font-size: 18px;
-            animation: dotBounce 1.5s ease-in-out infinite;
-        }
+        .version-dot { font-size: 18px; animation: dotBounce 1.5s ease-in-out infinite; }
         .version-text {
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--text);
+            font-size: 14px; font-weight: 700; letter-spacing: 1px;
+            text-transform: uppercase; color: var(--text);
             animation: textGlow 2.5s ease-in-out infinite;
         }
-        @keyframes versionAppear {
-            from { opacity: 0; transform: translateY(-20px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes versionPulse {
-            0%, 100% { box-shadow: 0 0 0 rgba(255, 140, 0, 0); transform: scale(1); }
-            50% { box-shadow: 0 0 25px rgba(255, 140, 0, 0.4); transform: scale(1.03); }
-        }
-        @keyframes versionShine {
-            0% { left: -100%; }
-            50%, 100% { left: 100%; }
-        }
-        @keyframes dotBounce {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-4px) scale(1.15); }
-        }
-        @keyframes textGlow {
-            0%, 100% { text-shadow: 0 0 0 rgba(255, 140, 0, 0); }
-            50% { text-shadow: 0 0 15px rgba(255, 140, 0, 0.6); }
-        }
+        @keyframes versionAppear { from { opacity: 0; transform: translateY(-20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes versionPulse { 0%, 100% { box-shadow: 0 0 0 rgba(255, 140, 0, 0); transform: scale(1); } 50% { box-shadow: 0 0 25px rgba(255, 140, 0, 0.4); transform: scale(1.03); } }
+        @keyframes versionShine { 0% { left: -100%; } 50%, 100% { left: 100%; } }
+        @keyframes dotBounce { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-4px) scale(1.15); } }
+        @keyframes textGlow { 0%, 100% { text-shadow: 0 0 0 rgba(255, 140, 0, 0); } 50% { text-shadow: 0 0 15px rgba(255, 140, 0, 0.6); } }
 
-        @keyframes bounce {
-            from { transform: translateY(0) scale(1); }
-            to { transform: translateY(-15px) scale(1.1); }
-        }
-        #easterEggTrigger:hover {
-            color: var(--primary);
-            border-bottom-color: var(--primary) !important;
-        }
-        @keyframes confettiFall {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-        }
+        @keyframes bounce { from { transform: translateY(0) scale(1); } to { transform: translateY(-15px) scale(1.1); } }
+        #easterEggTrigger:hover { color: var(--primary); border-bottom-color: var(--primary) !important; }
+        @keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
     </style>
 </head>
 <body>
@@ -130,6 +96,13 @@
         <div class="bubble-fish"></div>
         <div class="bubble-fish"></div>
     </div>
+
+    <!-- Nyan Cat (виден только в теме Nyan) -->
+    <div class="nyan-cat-anim">🐱</div>
+    <div class="nyan-cat-anim">🌈</div>
+    <div class="nyan-cat-anim">🐱</div>
+    <div class="nyan-cat-anim">🌈</div>
+
     <header class="header">
         <a href="index.html" class="logo">Ki<span>.</span>Tools</a>
         <nav class="nav">
@@ -143,7 +116,7 @@
     <div class="container">
         <div class="version-badge">
             <span class="version-dot">🟠</span>
-            <span class="version-text">Актуальная версия 3.5 Beta<span>
+            <span class="version-text">Актуальная версия</span>
         </div>
 
         <div class="card" style="text-align: center;">
@@ -164,7 +137,7 @@
             <a href="game.html" class="tile">
                 <span class="tile-icon">🎮</span>
                 <span class="tile-title">Игры</span>
-                <span class="tile-desc">Змейка, 2048, Крестики-нолики, Сапёр</span>
+                <span class="tile-desc">Змейка, 2048, Крестики-нолики, Сапёр, Пятнашки</span>
             </a>
             <a href="site.html" class="tile">
                 <span class="tile-icon">📖</span>
@@ -196,6 +169,7 @@
                 <div class="theme-option theme-fish" onclick="setTheme('fish')">🐠 Рыбки</div>
                 <div class="theme-option theme-red" onclick="setTheme('red')">🔴 Красная</div>
                 <div class="theme-option theme-space" onclick="setTheme('space')">🌌 Космос</div>
+                <div class="theme-option theme-nyan" onclick="setTheme('nyan')">🐱 Nyan Cat</div>
             </div>
             <button class="close-btn" onclick="closeSettings()">Готово</button>
         </div>
@@ -205,9 +179,7 @@
     <div class="modal-overlay" id="easterEggModal">
         <div class="modal" style="text-align: center;">
             <h2>🔐 Секретный код</h2>
-            <p style="font-size: 14px; color: var(--text-dim); margin-bottom: 15px;">
-                Введи код, чтобы открыть секрет
-            </p>
+            <p style="font-size: 14px; color: var(--text-dim); margin-bottom: 15px;">Введи код, чтобы открыть секрет</p>
             <input type="text" id="easterEggInput" placeholder="Введи код..."
                 style="width: 100%; padding: 14px 18px; border-radius: 12px; border: 2px solid var(--card-border); background: rgba(255,255,255,0.1); color: var(--text); font-size: 16px; font-family: inherit; outline: none; text-align: center; margin-bottom: 15px;"
                 onkeydown="if(event.key==='Enter') checkEasterEgg()">
@@ -219,7 +191,7 @@
         </div>
     </div>
 
-    <!-- Пасхалка: секретное сообщение и тема -->
+    <!-- Пасхалка: секретное сообщение -->
     <div class="modal-overlay" id="secretModal">
         <div class="modal" style="text-align: center;">
             <div style="font-size: 64px; margin-bottom: 15px; animation: bounce 0.8s infinite alternate;">🎉</div>
@@ -227,9 +199,7 @@
             <p style="font-size: 16px; color: var(--text-dim); margin-bottom: 20px;">
                 Секретный код: <strong style="color: var(--primary);">SUPER BOOM</strong>
             </p>
-            <p style="font-size: 14px; color: var(--text-dim); margin-bottom: 20px;">
-                Тема с картинкой активирована! 🖼️
-            </p>
+            <p style="font-size: 14px; color: var(--text-dim); margin-bottom: 20px;">Ты официально крутой 🍊</p>
             <button class="btn" onclick="closeSecret()">Закрыть</button>
         </div>
     </div>
@@ -248,9 +218,7 @@
                 }
             });
         }
-        function closeSettings() {
-            document.getElementById('settingsModal').classList.remove('active');
-        }
+        function closeSettings() { document.getElementById('settingsModal').classList.remove('active'); }
         function setTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('ki-theme', theme);
@@ -303,7 +271,6 @@
                 easterEggModal.classList.remove('active');
                 secretModal.classList.add('active');
                 fireConfetti();
-                // Активируем секретную тему с картинкой
                 setTimeout(() => {
                     document.documentElement.setAttribute('data-theme', 'secret');
                     localStorage.setItem('ki-theme', 'secret');
@@ -315,36 +282,22 @@
             }
         }
 
-        function closeEasterEgg() {
-            easterEggModal.classList.remove('active');
-        }
+        function closeEasterEgg() { easterEggModal.classList.remove('active'); }
+        function closeSecret() { secretModal.classList.remove('active'); }
 
-        function closeSecret() {
-            secretModal.classList.remove('active');
-        }
+        easterEggModal.addEventListener('click', function(e) { if (e.target === this) closeEasterEgg(); });
+        secretModal.addEventListener('click', function(e) { if (e.target === this) closeSecret(); });
 
-        easterEggModal.addEventListener('click', function(e) {
-            if (e.target === this) closeEasterEgg();
-        });
-        secretModal.addEventListener('click', function(e) {
-            if (e.target === this) closeSecret();
-        });
-
-        // Конфетти
         function fireConfetti() {
-            const colors = ['#FF8C00', '#FFD700', '#FF3B30', '#4CAF50', '#2196F3', '#9C27B0'];
+            const colors = ['#FF8C00', '#FFD700', '#FF3B30', '#4CAF50', '#2196F3', '#9C27B0', '#FF69B4'];
             for (let i = 0; i < 60; i++) {
                 const confetti = document.createElement('div');
                 confetti.style.cssText = `
-                    position: fixed;
-                    top: -20px;
-                    left: ${Math.random() * 100}%;
-                    width: ${8 + Math.random() * 8}px;
-                    height: ${8 + Math.random() * 8}px;
+                    position: fixed; top: -20px; left: ${Math.random() * 100}%;
+                    width: ${8 + Math.random() * 8}px; height: ${8 + Math.random() * 8}px;
                     background: ${colors[Math.floor(Math.random() * colors.length)]};
                     border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
-                    z-index: 9999;
-                    pointer-events: none;
+                    z-index: 9999; pointer-events: none;
                     animation: confettiFall ${2 + Math.random() * 2}s linear forwards;
                 `;
                 document.body.appendChild(confetti);
