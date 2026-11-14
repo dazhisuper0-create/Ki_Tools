@@ -7,7 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FF8C00">
-    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="style.css?v=14">
     <style>
         .game-section {
             background: var(--card-bg);
@@ -54,6 +54,8 @@
             justify-content: center;
             margin-bottom: 18px;
             position: relative;
+            flex-wrap: wrap;
+            gap: 20px;
         }
         #gameCanvas {
             background: rgba(0, 0, 0, 0.25);
@@ -134,12 +136,87 @@
             color: var(--text-dim);
             margin-top: 12px;
         }
+
+        /* Пары */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            gap: 10px;
+            justify-content: center;
+        }
+        .memory-card {
+            width: 80px; height: 80px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px;
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s;
+            user-select: none;
+        }
+        .memory-card.flipped { background: rgba(255,255,255,0.2); }
+        .memory-card.matched { background: rgba(76,175,80,0.6); cursor: default; }
+
+        /* Кликер */
+        .clicker-area {
+            text-align: center;
+        }
+        .clicker-btn {
+            font-size: 80px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.1s;
+            user-select: none;
+        }
+        .clicker-btn:active { transform: scale(0.9); }
+        .upgrade-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .upgrade-btn {
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .upgrade-btn:hover { background: rgba(255,255,255,0.25); }
+        .upgrade-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Тир */
+        .shoot-area {
+            position: relative;
+            width: 400px; height: 400px;
+            max-width: 100%;
+            background: rgba(0,0,0,0.25);
+            border: 2px solid var(--card-border);
+            border-radius: 18px;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+        .target {
+            position: absolute;
+            font-size: 40px;
+            transition: transform 0.1s;
+            user-select: none;
+        }
         @media (max-width: 600px) {
             .game-section { padding: 18px; }
             .game-section h2 { font-size: 18px; }
             .score-value { font-size: 22px; }
             .overlay h3 { font-size: 20px; }
             .dpad { grid-template-columns: repeat(3, 55px); grid-template-rows: repeat(2, 55px); }
+            .memory-grid { grid-template-columns: repeat(4, 60px); }
+            .memory-card { width: 60px; height: 60px; font-size: 24px; }
+            .shoot-area { width: 300px; height: 300px; }
         }
     </style>
 </head>
@@ -159,7 +236,6 @@
         <div class="bubble-fish"></div>
     </div>
 
-    <!-- Nyan Cat (виден только в теме Nyan) -->
     <div class="nyan-cat-anim">🐱</div>
     <div class="nyan-cat-anim">🌈</div>
     <div class="nyan-cat-anim">🐱</div>
@@ -181,30 +257,21 @@
         <div class="game-section">
             <h2>🐍 Змейка</h2>
             <div class="score-row">
-                <div class="score-box">
-                    <div class="score-label">Счёт</div>
-                    <div class="score-value" id="score">0</div>
-                </div>
-                <div class="score-box">
-                    <div class="score-label">Рекорд</div>
-                    <div class="score-value" id="best">0</div>
-                </div>
+                <div class="score-box"><div class="score-label">Счёт</div><div class="score-value" id="score">0</div></div>
+                <div class="score-box"><div class="score-label">Рекорд</div><div class="score-value" id="best">0</div></div>
             </div>
             <div class="canvas-wrap">
                 <canvas id="gameCanvas" width="400" height="400"></canvas>
                 <div class="overlay active" id="startOverlay">
-                    <h3>🐍 Змейка</h3>
-                    <p>WASD · Стрелки · Свайпы · Кнопки</p>
+                    <h3>🐍 Змейка</h3><p>WASD · Стрелки · Свайпы · Кнопки</p>
                     <button class="btn" onclick="startGame()">▶ Начать игру</button>
                 </div>
                 <div class="overlay" id="gameOverOverlay">
-                    <h3>💀 Игра окончена</h3>
-                    <p id="gameOverText">Твой счёт: 0</p>
+                    <h3>💀 Игра окончена</h3><p id="gameOverText">Твой счёт: 0</p>
                     <button class="btn" onclick="startGame()">🔄 Заново</button>
                 </div>
                 <div class="overlay" id="pauseOverlay">
-                    <h3>⏸ Пауза</h3>
-                    <p>Нажми, чтобы продолжить</p>
+                    <h3>⏸ Пауза</h3><p>Нажми, чтобы продолжить</p>
                     <button class="btn" onclick="togglePause()">▶ Продолжить</button>
                 </div>
             </div>
@@ -225,37 +292,17 @@
         <div class="game-section">
             <h2>🔢 2048</h2>
             <div class="score-row">
-                <div class="score-box">
-                    <div class="score-label">Счёт</div>
-                    <div class="score-value" id="g2048Score">0</div>
-                </div>
-                <div class="score-box">
-                    <div class="score-label">Рекорд</div>
-                    <div class="score-value" id="g2048Best">0</div>
-                </div>
+                <div class="score-box"><div class="score-label">Счёт</div><div class="score-value" id="g2048Score">0</div></div>
+                <div class="score-box"><div class="score-label">Рекорд</div><div class="score-value" id="g2048Best">0</div></div>
             </div>
             <div class="canvas-wrap">
-                <div id="g2048Board" style="
-                    display: grid;
-                    grid-template-columns: repeat(4, 80px);
-                    grid-template-rows: repeat(4, 80px);
-                    gap: 10px;
-                    background: rgba(0,0,0,0.25);
-                    padding: 10px;
-                    border-radius: 18px;
-                    border: 2px solid var(--card-border);
-                    touch-action: none;
-                    user-select: none;
-                "></div>
+                <div id="g2048Board" style="display:grid;grid-template-columns:repeat(4,80px);grid-template-rows:repeat(4,80px);gap:10px;background:rgba(0,0,0,0.25);padding:10px;border-radius:18px;border:2px solid var(--card-border);touch-action:none;user-select:none;"></div>
                 <div class="overlay active" id="g2048Overlay">
-                    <h3 id="g2048OverTitle">🔢 2048</h3>
-                    <p id="g2048OverText">Соединяй плитки, чтобы получить 2048</p>
+                    <h3 id="g2048OverTitle">🔢 2048</h3><p id="g2048OverText">Соединяй плитки, чтобы получить 2048</p>
                     <button class="btn" onclick="start2048()">▶ Начать игру</button>
                 </div>
             </div>
-            <div class="btn-row">
-                <button class="btn btn-secondary" onclick="start2048()">🔄 Заново</button>
-            </div>
+            <div class="btn-row"><button class="btn btn-secondary" onclick="start2048()">🔄 Заново</button></div>
             <p class="hint">Стрелки на клавиатуре · Свайпы на поле</p>
         </div>
 
@@ -263,40 +310,18 @@
         <div class="game-section">
             <h2>❌⭕ Крестики-нолики</h2>
             <div class="score-row">
-                <div class="score-box">
-                    <div class="score-label">Победы</div>
-                    <div class="score-value" id="tttWins">0</div>
-                </div>
-                <div class="score-box">
-                    <div class="score-label">Ничьи</div>
-                    <div class="score-value" id="tttDraws">0</div>
-                </div>
-                <div class="score-box">
-                    <div class="score-label">Поражения</div>
-                    <div class="score-value" id="tttLosses">0</div>
-                </div>
+                <div class="score-box"><div class="score-label">Победы</div><div class="score-value" id="tttWins">0</div></div>
+                <div class="score-box"><div class="score-label">Ничьи</div><div class="score-value" id="tttDraws">0</div></div>
+                <div class="score-box"><div class="score-label">Поражения</div><div class="score-value" id="tttLosses">0</div></div>
             </div>
             <div class="canvas-wrap">
-                <div id="tttBoard" style="
-                    display: grid;
-                    grid-template-columns: repeat(3, 90px);
-                    grid-template-rows: repeat(3, 90px);
-                    gap: 10px;
-                    background: rgba(0,0,0,0.25);
-                    padding: 12px;
-                    border-radius: 18px;
-                    border: 2px solid var(--card-border);
-                    user-select: none;
-                "></div>
+                <div id="tttBoard" style="display:grid;grid-template-columns:repeat(3,90px);grid-template-rows:repeat(3,90px);gap:10px;background:rgba(0,0,0,0.25);padding:12px;border-radius:18px;border:2px solid var(--card-border);user-select:none;"></div>
                 <div class="overlay active" id="tttOverlay">
-                    <h3 id="tttOverTitle">❌⭕ Крестики-нолики</h3>
-                    <p id="tttOverText">Ты играешь за ❌. Собери три в ряд!</p>
+                    <h3 id="tttOverTitle">❌⭕ Крестики-нолики</h3><p id="tttOverText">Ты играешь за ❌. Собери три в ряд!</p>
                     <button class="btn" onclick="startTTT()">▶ Начать игру</button>
                 </div>
             </div>
-            <div class="btn-row">
-                <button class="btn btn-secondary" onclick="startTTT()">🔄 Заново</button>
-            </div>
+            <div class="btn-row"><button class="btn btn-secondary" onclick="startTTT()">🔄 Заново</button></div>
             <p class="hint">Тапни по клетке, чтобы поставить ❌</p>
         </div>
 
@@ -304,22 +329,107 @@
         <div class="game-section">
             <h2>💣 Сапёр</h2>
             <div class="score-row">
-                <div class="score-box">
-                    <div class="score-label">Мины</div>
-                    <div class="score-value" id="minesLeft">10</div>
-                </div>
-                <div class="score-box">
-                    <div class="score-label">Время</div>
-                    <div class="score-value" id="minesTimer">0</div>
-                </div>
+                <div class="score-box"><div class="score-label">Мины</div><div class="score-value" id="minesLeft">10</div></div>
+                <div class="score-box"><div class="score-label">Время</div><div class="score-value" id="minesTimer">0</div></div>
             </div>
-            <div class="canvas-wrap" style="overflow-x: auto;">
-                <div id="minesBoard" style="display: grid; gap: 4px; padding: 10px; background: rgba(0,0,0,0.25); border-radius: 18px; border: 2px solid var(--card-border); touch-action: manipulation;"></div>
+            <div class="canvas-wrap" style="overflow-x:auto;">
+                <div id="minesBoard" style="display:grid;gap:4px;padding:10px;background:rgba(0,0,0,0.25);border-radius:18px;border:2px solid var(--card-border);touch-action:manipulation;"></div>
             </div>
-            <div class="btn-row">
-                <button class="btn" onclick="startMines()">🔄 Новая игра</button>
-            </div>
+            <div class="btn-row"><button class="btn" onclick="startMines()">🔄 Новая игра</button></div>
             <p class="hint">ПК: левая — открыть, правая — флажок · Телефон: двойной тап — флажок</p>
+        </div>
+
+        <!-- ПЯТНАШКИ -->
+        <div class="game-section">
+            <h2>🧩 Пятнашки</h2>
+            <div class="score-row">
+                <div class="score-box"><div class="score-label">Ходы</div><div class="score-value" id="puzzleMoves">0</div></div>
+                <div class="score-box"><div class="score-label">Время</div><div class="score-value" id="puzzleTimer">0</div></div>
+            </div>
+            <div class="canvas-wrap">
+                <div id="puzzleBoard" style="display:grid;grid-template-columns:repeat(4,80px);grid-template-rows:repeat(4,80px);gap:8px;background:rgba(0,0,0,0.25);padding:12px;border-radius:18px;border:2px solid var(--card-border);user-select:none;"></div>
+                <div class="overlay active" id="puzzleOverlay">
+                    <h3 id="puzzleOverTitle">🧩 Пятнашки</h3><p id="puzzleOverText">Расставь числа от 1 до 15 по порядку</p>
+                    <button class="btn" onclick="startPuzzle()">▶ Начать игру</button>
+                </div>
+            </div>
+            <div class="btn-row"><button class="btn" onclick="startPuzzle()">🔄 Перемешать</button></div>
+            <p class="hint">Тап по плитке рядом с пустой · Стрелки · Свайпы</p>
+        </div>
+
+        <!-- МОРСКОЙ БОЙ -->
+        <div class="game-section">
+            <h2>🚢 Морской бой</h2>
+            <div class="score-row">
+                <div class="score-box"><div class="score-label">Твои попадания</div><div class="score-value" id="navalHits">0</div></div>
+                <div class="score-box"><div class="score-label">Попадания врага</div><div class="score-value" id="navalEnemyHits">0</div></div>
+            </div>
+            <div id="navalStatus" style="text-align:center;margin-bottom:15px;font-size:15px;font-weight:600;color:var(--text);">Расставь корабли: нажми на клетку, чтобы поставить корабль</div>
+            <div class="canvas-wrap" style="flex-direction:column;gap:20px;">
+                <div>
+                    <p style="text-align:center;margin-bottom:8px;font-size:13px;color:var(--text-dim);">Твоё поле</p>
+                    <div id="navalPlayerBoard" style="display:grid;grid-template-columns:repeat(10,32px);gap:2px;background:rgba(0,0,0,0.25);padding:8px;border-radius:12px;border:2px solid var(--card-border);touch-action:manipulation;"></div>
+                </div>
+                <div>
+                    <p style="text-align:center;margin-bottom:8px;font-size:13px;color:var(--text-dim);">Поле врага (клик — выстрел)</p>
+                    <div id="navalEnemyBoard" style="display:grid;grid-template-columns:repeat(10,32px);gap:2px;background:rgba(0,0,0,0.25);padding:8px;border-radius:12px;border:2px solid var(--card-border);touch-action:manipulation;"></div>
+                </div>
+            </div>
+            <div class="btn-row" style="margin-top:15px;">
+                <button class="btn" id="navalStartBtn" onclick="startNaval()">▶ Начать игру</button>
+                <button class="btn btn-secondary" onclick="resetNaval()">🔄 Заново</button>
+            </div>
+            <p class="hint">Корабли: 1×4, 2×3, 3×2, 4×1. Клик по полю врага — выстрел.</p>
+        </div>
+
+        <!-- ПАРЫ (MEMORY) -->
+        <div class="game-section">
+            <h2>🃏 Пары</h2>
+            <div class="score-row">
+                <div class="score-box"><div class="score-label">Ходы</div><div class="score-value" id="memoryMoves">0</div></div>
+                <div class="score-box"><div class="score-label">Найдено</div><div class="score-value" id="memoryFound">0</div></div>
+            </div>
+            <div class="canvas-wrap">
+                <div class="memory-grid" id="memoryGrid"></div>
+            </div>
+            <div class="btn-row"><button class="btn" onclick="startMemory()">🔄 Новая игра</button></div>
+            <p class="hint">Найди все пары одинаковых карточек</p>
+        </div>
+
+        <!-- КЛИКЕР -->
+        <div class="game-section">
+            <h2>👆 Кликер</h2>
+            <div class="score-row">
+                <div class="score-box"><div class="score-label">Очки</div><div class="score-value" id="clickerScore">0</div></div>
+                <div class="score-box"><div class="score-label">В секунду</div><div class="score-value" id="clickerPerSec">0</div></div>
+            </div>
+            <div class="clicker-area">
+                <button class="clicker-btn" id="clickerBtn" onclick="clickerClick()">🍊</button>
+                <div class="upgrade-row">
+                    <button class="upgrade-btn" id="upg1" onclick="buyUpgrade(1)">+1 за клик (10)</button>
+                    <button class="upgrade-btn" id="upg2" onclick="buyUpgrade(2)">+1 в сек (50)</button>
+                    <button class="upgrade-btn" id="upg3" onclick="buyUpgrade(3)">×2 множитель (200)</button>
+                </div>
+            </div>
+            <p class="hint">Кликай по апельсину, покупай улучшения</p>
+        </div>
+
+        <!-- ТИР -->
+        <div class="game-section">
+            <h2>🎯 Тир</h2>
+            <div class="score-row">
+                <div class="score-box"><div class="score-label">Очки</div><div class="score-value" id="shootScore">0</div></div>
+                <div class="score-box"><div class="score-label">Время</div><div class="score-value" id="shootTimer">30</div></div>
+            </div>
+            <div class="canvas-wrap">
+                <div class="shoot-area" id="shootArea">
+                    <div class="overlay active" id="shootOverlay">
+                        <h3>🎯 Тир</h3><p>Попади по мишеням за 30 секунд</p>
+                        <button class="btn" onclick="startShoot()">▶ Начать</button>
+                    </div>
+                </div>
+            </div>
+            <p class="hint">Кликай по мишеням 🎯 как можно быстрее</p>
         </div>
 
     </div>
@@ -333,7 +443,7 @@
             <h2>🎨 Выбери тему</h2>
             <div class="theme-grid">
                 <div class="theme-option theme-orange" onclick="setTheme('orange')">🟠 Оранжевая</div>
-                <div class="theme-option theme-dark" onclick="setTheme('dark')"> ⚫ Тёмная</div>
+                <div class="theme-option theme-dark" onclick="setTheme('dark')">⚫ Тёмная</div>
                 <div class="theme-option theme-light" onclick="setTheme('light')">⚪ Светлая</div>
                 <div class="theme-option theme-blue" onclick="setTheme('blue')">🔵 Синяя</div>
                 <div class="theme-option theme-green" onclick="setTheme('green')">🟢 Зелёная</div>
@@ -341,7 +451,7 @@
                 <div class="theme-option theme-red" onclick="setTheme('red')">🔴 Красная</div>
                 <div class="theme-option theme-space" onclick="setTheme('space')">🌌 Космос</div>
                 <div class="theme-option theme-nyan" onclick="setTheme('nyan')">🐱 Nyan Cat</div>
-                <div class="theme-option theme-yellow" onclick="setTheme('yellow')">🟡 Жёлтая</div>
+                <div class="theme-option theme-yellow" onclick="setTheme('yellow')">☀️ Жёлтая</div>
                 <div class="theme-option theme-darkred" onclick="setTheme('darkred')">🍷 Тёмно-красная</div>
             </div>
             <button class="close-btn" onclick="closeSettings()">Готово</button>
@@ -349,16 +459,14 @@
     </div>
 
     <script>
-        // ТЕМА
+        // ===== ТЕМА =====
         const savedTheme = localStorage.getItem('ki-theme') || 'orange';
         document.documentElement.setAttribute('data-theme', savedTheme);
         function openSettings() {
             document.getElementById('settingsModal').classList.add('active');
             document.querySelectorAll('.theme-option').forEach(opt => {
                 opt.classList.remove('active');
-                if (opt.classList.contains('theme-' + localStorage.getItem('ki-theme'))) {
-                    opt.classList.add('active');
-                }
+                if (opt.classList.contains('theme-' + localStorage.getItem('ki-theme'))) opt.classList.add('active');
             });
         }
         function closeSettings() { document.getElementById('settingsModal').classList.remove('active'); }
@@ -368,11 +476,9 @@
             document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
             if (event && event.target) event.target.classList.add('active');
         }
-        document.getElementById('settingsModal').addEventListener('click', function(e) {
-            if (e.target === this) closeSettings();
-        });
+        document.getElementById('settingsModal').addEventListener('click', function(e) { if (e.target === this) closeSettings(); });
 
-        // ЗМЕЙКА
+        // ===== ЗМЕЙКА =====
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const CELL = 20;
@@ -381,74 +487,49 @@
         let snake, dir, nextDir, food, score, best, speed, gameLoop, paused, running;
         best = parseInt(localStorage.getItem('ki-snake-best') || '0');
         document.getElementById('best').textContent = best;
-
         if (!CanvasRenderingContext2D.prototype.roundRect) {
             CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
-                if (w < 2 * r) r = w / 2;
-                if (h < 2 * r) r = h / 2;
-                this.beginPath();
-                this.moveTo(x + r, y);
-                this.arcTo(x + w, y, x + w, y + h, r);
-                this.arcTo(x + w, y + h, x, y + h, r);
-                this.arcTo(x, y + h, x, y, r);
-                this.arcTo(x, y, x + w, y, r);
-                this.closePath();
-                return this;
+                if (w < 2 * r) r = w / 2; if (h < 2 * r) r = h / 2;
+                this.beginPath(); this.moveTo(x + r, y);
+                this.arcTo(x + w, y, x + w, y + h, r); this.arcTo(x + w, y + h, x, y + h, r);
+                this.arcTo(x, y + h, x, y, r); this.arcTo(x, y, x + w, y, r); this.closePath(); return this;
             };
         }
-
         function resetGame() {
             snake = [{x: 10, y: 10}, {x: 9, y: 10}, {x: 8, y: 10}];
-            dir = {x: 1, y: 0};
-            nextDir = {x: 1, y: 0};
-            score = 0;
-            speed = 130;
-            paused = false;
-            running = false;
-            placeFood();
-            document.getElementById('score').textContent = '0';
-            draw();
+            dir = {x: 1, y: 0}; nextDir = {x: 1, y: 0};
+            score = 0; speed = 130; paused = false; running = false;
+            placeFood(); document.getElementById('score').textContent = '0'; draw();
         }
         function placeFood() {
             let newFood;
-            do {
-                newFood = {x: Math.floor(Math.random() * COLS), y: Math.floor(Math.random() * ROWS)};
-            } while (snake.some(s => s.x === newFood.x && s.y === newFood.y));
+            do { newFood = {x: Math.floor(Math.random() * COLS), y: Math.floor(Math.random() * ROWS)}; }
+            while (snake.some(s => s.x === newFood.x && s.y === newFood.y));
             food = newFood;
         }
         function draw() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
-            ctx.lineWidth = 1;
-            for (let i = 0; i <= COLS; i++) { ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, canvas.height); ctx.stroke(); }
-            for (let i = 0; i <= ROWS; i++) { ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(canvas.width, i * CELL); ctx.stroke(); }
-            ctx.fillStyle = '#FF3B30';
-            ctx.beginPath();
-            ctx.arc(food.x * CELL + CELL/2, food.y * CELL + CELL/2, CELL/2 - 2, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-            ctx.beginPath();
-            ctx.arc(food.x * CELL + CELL/2 - 3, food.y * CELL + CELL/2 - 3, 2, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(255,255,255,0.04)'; ctx.lineWidth = 1;
+            for (let i = 0; i <= COLS; i++) { ctx.beginPath(); ctx.moveTo(i*CELL,0); ctx.lineTo(i*CELL,canvas.height); ctx.stroke(); }
+            for (let i = 0; i <= ROWS; i++) { ctx.beginPath(); ctx.moveTo(0,i*CELL); ctx.lineTo(canvas.width,i*CELL); ctx.stroke(); }
+            ctx.fillStyle = '#FF3B30'; ctx.beginPath(); ctx.arc(food.x*CELL+CELL/2, food.y*CELL+CELL/2, CELL/2-2, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.beginPath(); ctx.arc(food.x*CELL+CELL/2-3, food.y*CELL+CELL/2-3, 2, 0, Math.PI*2); ctx.fill();
             snake.forEach((seg, i) => {
                 const isHead = i === 0;
                 ctx.fillStyle = isHead ? '#FF8C00' : '#E85D00';
-                ctx.beginPath();
-                ctx.roundRect(seg.x * CELL + 2, seg.y * CELL + 2, CELL - 4, CELL - 4, isHead ? 7 : 5);
-                ctx.fill();
+                ctx.beginPath(); ctx.roundRect(seg.x*CELL+2, seg.y*CELL+2, CELL-4, CELL-4, isHead?7:5); ctx.fill();
                 if (isHead) {
                     ctx.fillStyle = '#fff';
-                    let ex1, ey1, ex2, ey2;
-                    if (dir.x === 1) { ex1 = 13; ey1 = 7; ex2 = 13; ey2 = 13; }
-                    else if (dir.x === -1) { ex1 = 7; ey1 = 7; ex2 = 7; ey2 = 13; }
-                    else if (dir.y === 1) { ex1 = 7; ey1 = 13; ex2 = 13; ey2 = 13; }
-                    else { ex1 = 7; ey1 = 7; ex2 = 13; ey2 = 7; }
-                    ctx.beginPath(); ctx.arc(seg.x * CELL + ex1, seg.y * CELL + ey1, 3, 0, Math.PI * 2); ctx.fill();
-                    ctx.beginPath(); ctx.arc(seg.x * CELL + ex2, seg.y * CELL + ey2, 3, 0, Math.PI * 2); ctx.fill();
+                    let ex1,ey1,ex2,ey2;
+                    if (dir.x===1){ex1=13;ey1=7;ex2=13;ey2=13;}
+                    else if (dir.x===-1){ex1=7;ey1=7;ex2=7;ey2=13;}
+                    else if (dir.y===1){ex1=7;ey1=13;ex2=13;ey2=13;}
+                    else {ex1=7;ey1=7;ex2=13;ey2=7;}
+                    ctx.beginPath(); ctx.arc(seg.x*CELL+ex1, seg.y*CELL+ey1, 3, 0, Math.PI*2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(seg.x*CELL+ex2, seg.y*CELL+ey2, 3, 0, Math.PI*2); ctx.fill();
                     ctx.fillStyle = '#000';
-                    ctx.beginPath(); ctx.arc(seg.x * CELL + ex1 + dir.x, seg.y * CELL + ey1 + dir.y, 1.5, 0, Math.PI * 2); ctx.fill();
-                    ctx.beginPath(); ctx.arc(seg.x * CELL + ex2 + dir.x, seg.y * CELL + ey2 + dir.y, 1.5, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(seg.x*CELL+ex1+dir.x, seg.y*CELL+ey1+dir.y, 1.5, 0, Math.PI*2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(seg.x*CELL+ex2+dir.x, seg.y*CELL+ey2+dir.y, 1.5, 0, Math.PI*2); ctx.fill();
                 }
             });
         }
@@ -460,21 +541,13 @@
             if (snake.some(s => s.x === head.x && s.y === head.y)) return gameOver();
             snake.unshift(head);
             if (head.x === food.x && head.y === food.y) {
-                score += 10;
-                document.getElementById('score').textContent = score;
-                placeFood();
-                if (speed > 60) speed -= 3;
+                score += 10; document.getElementById('score').textContent = score; placeFood(); if (speed > 60) speed -= 3;
             } else { snake.pop(); }
             draw();
         }
         function gameOver() {
-            running = false;
-            clearInterval(gameLoop);
-            if (score > best) {
-                best = score;
-                localStorage.setItem('ki-snake-best', best);
-                document.getElementById('best').textContent = best;
-            }
+            running = false; clearInterval(gameLoop);
+            if (score > best) { best = score; localStorage.setItem('ki-snake-best', best); document.getElementById('best').textContent = best; }
             document.getElementById('gameOverText').textContent = 'Твой счёт: ' + score;
             document.getElementById('gameOverOverlay').classList.add('active');
         }
@@ -482,19 +555,14 @@
             document.getElementById('startOverlay').classList.remove('active');
             document.getElementById('gameOverOverlay').classList.remove('active');
             document.getElementById('pauseOverlay').classList.remove('active');
-            resetGame();
-            running = true;
-            clearInterval(gameLoop);
-            gameLoop = setInterval(step, speed);
+            resetGame(); running = true; clearInterval(gameLoop); gameLoop = setInterval(step, speed);
             const speedUpdater = setInterval(() => {
                 if (!running) { clearInterval(speedUpdater); return; }
-                clearInterval(gameLoop);
-                gameLoop = setInterval(step, speed);
+                clearInterval(gameLoop); gameLoop = setInterval(step, speed);
             }, 1000);
         }
         function togglePause() {
-            if (!running) return;
-            paused = !paused;
+            if (!running) return; paused = !paused;
             document.getElementById('pauseOverlay').classList.toggle('active', paused);
         }
         function changeDir(x, y) {
@@ -505,500 +573,621 @@
         }
         document.addEventListener('keydown', (e) => {
             const keyMap = {
-                'ArrowUp': [0, -1], 'ArrowDown': [0, 1],
-                'ArrowLeft': [-1, 0], 'ArrowRight': [1, 0],
-                'w': [0, -1], 's': [0, 1], 'a': [-1, 0], 'd': [1, 0],
-                'W': [0, -1], 'S': [0, 1], 'A': [-1, 0], 'D': [1, 0],
-                'ц': [0, -1], 'ы': [0, 1], 'ф': [-1, 0], 'в': [1, 0],
-                'Ц': [0, -1], 'Ы': [0, 1], 'Ф': [-1, 0], 'В': [1, 0]
+                'ArrowUp':[0,-1],'ArrowDown':[0,1],'ArrowLeft':[-1,0],'ArrowRight':[1,0],
+                'w':[0,-1],'s':[0,1],'a':[-1,0],'d':[1,0],'W':[0,-1],'S':[0,1],'A':[-1,0],'D':[1,0],
+                'ц':[0,-1],'ы':[0,1],'ф':[-1,0],'в':[1,0],'Ц':[0,-1],'Ы':[0,1],'Ф':[-1,0],'В':[1,0]
             };
             if (keyMap[e.key]) { e.preventDefault(); changeDir(...keyMap[e.key]); }
             if (e.key === ' ') { e.preventDefault(); togglePause(); }
         });
         let touchStartX = 0, touchStartY = 0;
-        canvas.addEventListener('touchstart', (e) => {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-        }, {passive: true});
+        canvas.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, {passive: true});
         canvas.addEventListener('touchend', (e) => {
             const dx = e.changedTouches[0].clientX - touchStartX;
             const dy = e.changedTouches[0].clientY - touchStartY;
             if (Math.abs(dx) < 30 && Math.abs(dy) < 30) return;
-            if (Math.abs(dx) > Math.abs(dy)) changeDir(dx > 0 ? 1 : -1, 0);
-            else changeDir(0, dy > 0 ? 1 : -1);
+            if (Math.abs(dx) > Math.abs(dy)) changeDir(dx > 0 ? 1 : -1, 0); else changeDir(0, dy > 0 ? 1 : -1);
         }, {passive: true});
         resetGame();
 
-        // 2048
-        let g2048Board = [];
-        let g2048Score = 0;
+        // ===== 2048 =====
+        let g2048Board = [], g2048Score = 0;
         let g2048Best = parseInt(localStorage.getItem('ki-2048-best') || '0');
         let g2048Running = false;
         document.getElementById('g2048Best').textContent = g2048Best;
-        const TILE_COLORS = {
-            2:{bg:'#EEE4DA',color:'#776E65'}, 4:{bg:'#EDE0C8',color:'#776E65'},
-            8:{bg:'#F2B179',color:'#FFFFFF'}, 16:{bg:'#F59563',color:'#FFFFFF'},
-            32:{bg:'#F67C5F',color:'#FFFFFF'}, 64:{bg:'#F65E3B',color:'#FFFFFF'},
-            128:{bg:'#EDCF72',color:'#FFFFFF'}, 256:{bg:'#EDCC61',color:'#FFFFFF'},
-            512:{bg:'#EDC850',color:'#FFFFFF'}, 1024:{bg:'#EDC53F',color:'#FFFFFF'},
-            2048:{bg:'#EDC22E',color:'#FFFFFF'}
-        };
+        const TILE_COLORS = {2:{bg:'#EEE4DA',color:'#776E65'},4:{bg:'#EDE0C8',color:'#776E65'},8:{bg:'#F2B179',color:'#FFFFFF'},16:{bg:'#F59563',color:'#FFFFFF'},32:{bg:'#F67C5F',color:'#FFFFFF'},64:{bg:'#F65E3B',color:'#FFFFFF'},128:{bg:'#EDCF72',color:'#FFFFFF'},256:{bg:'#EDCC61',color:'#FFFFFF'},512:{bg:'#EDC850',color:'#FFFFFF'},1024:{bg:'#EDC53F',color:'#FFFFFF'},2048:{bg:'#EDC22E',color:'#FFFFFF'}};
         function getTileColor(value) { return TILE_COLORS[value] || { bg: '#3C3A32', color: '#FFFFFF' }; }
         function init2048() {
             g2048Board = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
-            g2048Score = 0;
-            document.getElementById('g2048Score').textContent = '0';
-            addRandomTile(); addRandomTile();
-            render2048();
+            g2048Score = 0; document.getElementById('g2048Score').textContent = '0';
+            addRandomTile(); addRandomTile(); render2048();
         }
         function addRandomTile() {
             const empty = [];
-            for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) if (g2048Board[r][c] === 0) empty.push({r, c});
-            if (empty.length === 0) return;
-            const spot = empty[Math.floor(Math.random() * empty.length)];
-            g2048Board[spot.r][spot.c] = Math.random() < 0.9 ? 2 : 4;
+            for (let r=0;r<4;r++) for (let c=0;c<4;c++) if (g2048Board[r][c]===0) empty.push({r,c});
+            if (empty.length===0) return;
+            const spot = empty[Math.floor(Math.random()*empty.length)];
+            g2048Board[spot.r][spot.c] = Math.random()<0.9?2:4;
         }
         function render2048() {
-            const boardEl = document.getElementById('g2048Board');
-            boardEl.innerHTML = '';
-            for (let r = 0; r < 4; r++) {
-                for (let c = 0; c < 4; c++) {
-                    const val = g2048Board[r][c];
-                    const tile = document.createElement('div');
-                    const colors = getTileColor(val);
-                    tile.style.cssText = `
-                        background: ${val === 0 ? 'rgba(255,255,255,0.05)' : colors.bg};
-                        color: ${colors.color};
-                        border-radius: 12px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-size: ${val >= 1000 ? '24px' : val >= 100 ? '28px' : '32px'};
-                        font-weight: 900;
-                        transition: all 0.15s ease;
-                        font-family: inherit;
-                    `;
-                    tile.textContent = val === 0 ? '' : val;
-                    boardEl.appendChild(tile);
-                }
+            const boardEl = document.getElementById('g2048Board'); boardEl.innerHTML='';
+            for (let r=0;r<4;r++) for (let c=0;c<4;c++) {
+                const val = g2048Board[r][c]; const tile = document.createElement('div'); const colors = getTileColor(val);
+                tile.style.cssText = `background:${val===0?'rgba(255,255,255,0.05)':colors.bg};color:${colors.color};border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:${val>=1000?'24px':val>=100?'28px':'32px'};font-weight:900;transition:all 0.15s ease;font-family:inherit;`;
+                tile.textContent = val===0?'':val; boardEl.appendChild(tile);
             }
         }
         function move2048(direction) {
             if (!g2048Running) return;
-            const oldBoard = JSON.stringify(g2048Board);
-            let moved = false;
-            const rotate = (board) => board[0].map((_, i) => board.map(row => row[i]).reverse());
+            const oldBoard = JSON.stringify(g2048Board); let moved = false;
+            const rotate = (board) => board[0].map((_,i) => board.map(row => row[i]).reverse());
             let board = g2048Board.map(row => [...row]);
-            const rotations = { left: 0, up: 1, right: 2, down: 3 };
-            for (let i = 0; i < rotations[direction]; i++) board = rotate(board);
-            for (let r = 0; r < 4; r++) {
-                let row = board[r].filter(v => v !== 0);
-                for (let i = 0; i < row.length - 1; i++) {
-                    if (row[i] === row[i + 1]) { row[i] *= 2; g2048Score += row[i]; row[i + 1] = 0; }
-                }
-                row = row.filter(v => v !== 0);
-                while (row.length < 4) row.push(0);
-                board[r] = row;
+            const rotations = {left:0,up:1,right:2,down:3};
+            for (let i=0;i<rotations[direction];i++) board = rotate(board);
+            for (let r=0;r<4;r++) {
+                let row = board[r].filter(v=>v!==0);
+                for (let i=0;i<row.length-1;i++) if (row[i]===row[i+1]) { row[i]*=2; g2048Score+=row[i]; row[i+1]=0; }
+                row = row.filter(v=>v!==0); while (row.length<4) row.push(0); board[r]=row;
             }
-            for (let i = 0; i < (4 - rotations[direction]) % 4; i++) board = rotate(board);
-            if (JSON.stringify(board) !== oldBoard) {
-                g2048Board = board;
-                addRandomTile();
-                moved = true;
-            }
-            if (moved) {
-                document.getElementById('g2048Score').textContent = g2048Score;
-                render2048();
-                check2048GameOver();
-            }
+            for (let i=0;i<(4-rotations[direction])%4;i++) board = rotate(board);
+            if (JSON.stringify(board)!==oldBoard) { g2048Board=board; addRandomTile(); moved=true; }
+            if (moved) { document.getElementById('g2048Score').textContent=g2048Score; render2048(); check2048GameOver(); }
         }
         function check2048GameOver() {
-            for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) if (g2048Board[r][c] === 0) return;
-            for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) {
-                if (c < 3 && g2048Board[r][c] === g2048Board[r][c + 1]) return;
-                if (r < 3 && g2048Board[r][c] === g2048Board[r + 1][c]) return;
+            for (let r=0;r<4;r++) for (let c=0;c<4;c++) if (g2048Board[r][c]===0) return;
+            for (let r=0;r<4;r++) for (let c=0;c<4;c++) {
+                if (c<3 && g2048Board[r][c]===g2048Board[r][c+1]) return;
+                if (r<3 && g2048Board[r][c]===g2048Board[r+1][c]) return;
             }
             g2048Running = false;
-            if (g2048Score > g2048Best) {
-                g2048Best = g2048Score;
-                localStorage.setItem('ki-2048-best', g2048Best);
-                document.getElementById('g2048Best').textContent = g2048Best;
-            }
-            document.getElementById('g2048OverTitle').textContent = '💀 Игра окончена';
-            document.getElementById('g2048OverText').textContent = 'Твой счёт: ' + g2048Score;
+            if (g2048Score>g2048Best) { g2048Best=g2048Score; localStorage.setItem('ki-2048-best',g2048Best); document.getElementById('g2048Best').textContent=g2048Best; }
+            document.getElementById('g2048OverTitle').textContent='💀 Игра окончена';
+            document.getElementById('g2048OverText').textContent='Твой счёт: '+g2048Score;
             document.getElementById('g2048Overlay').classList.add('active');
         }
-        function start2048() {
-            document.getElementById('g2048Overlay').classList.remove('active');
-            g2048Running = true;
-            init2048();
-        }
+        function start2048() { document.getElementById('g2048Overlay').classList.remove('active'); g2048Running=true; init2048(); }
         document.addEventListener('keydown', (e) => {
             if (!g2048Running) return;
             const map = {'ArrowUp':'up','ArrowDown':'down','ArrowLeft':'left','ArrowRight':'right'};
             if (map[e.key]) { e.preventDefault(); move2048(map[e.key]); }
         });
         const board2048El = document.getElementById('g2048Board');
-        let t2048X = 0, t2048Y = 0;
-        board2048El.addEventListener('touchstart', (e) => {
-            t2048X = e.touches[0].clientX;
-            t2048Y = e.touches[0].clientY;
-        }, {passive: true});
+        let t2048X=0, t2048Y=0;
+        board2048El.addEventListener('touchstart', (e) => { t2048X=e.touches[0].clientX; t2048Y=e.touches[0].clientY; }, {passive:true});
         board2048El.addEventListener('touchend', (e) => {
-            const dx = e.changedTouches[0].clientX - t2048X;
-            const dy = e.changedTouches[0].clientY - t2048Y;
-            if (Math.abs(dx) < 30 && Math.abs(dy) < 30) return;
-            if (Math.abs(dx) > Math.abs(dy)) move2048(dx > 0 ? 'right' : 'left');
-            else move2048(dy > 0 ? 'down' : 'up');
-        }, {passive: true});
+            const dx=e.changedTouches[0].clientX-t2048X, dy=e.changedTouches[0].clientY-t2048Y;
+            if (Math.abs(dx)<30 && Math.abs(dy)<30) return;
+            if (Math.abs(dx)>Math.abs(dy)) move2048(dx>0?'right':'left'); else move2048(dy>0?'down':'up');
+        }, {passive:true});
         init2048();
 
-        // КРЕСТИКИ-НОЛИКИ
-        let tttBoard = ['', '', '', '', '', '', '', '', ''];
-        let tttRunning = false;
-        let tttPlayerTurn = true;
-        let tttWins = parseInt(localStorage.getItem('ki-ttt-wins') || '0');
-        let tttDraws = parseInt(localStorage.getItem('ki-ttt-draws') || '0');
-        let tttLosses = parseInt(localStorage.getItem('ki-ttt-losses') || '0');
-        document.getElementById('tttWins').textContent = tttWins;
-        document.getElementById('tttDraws').textContent = tttDraws;
-        document.getElementById('tttLosses').textContent = tttLosses;
+        // ===== КРЕСТИКИ-НОЛИКИ =====
+        let tttBoard = ['','','','','','','','',''];
+        let tttRunning = false, tttPlayerTurn = true;
+        let tttWins = parseInt(localStorage.getItem('ki-ttt-wins')||'0');
+        let tttDraws = parseInt(localStorage.getItem('ki-ttt-draws')||'0');
+        let tttLosses = parseInt(localStorage.getItem('ki-ttt-losses')||'0');
+        document.getElementById('tttWins').textContent=tttWins;
+        document.getElementById('tttDraws').textContent=tttDraws;
+        document.getElementById('tttLosses').textContent=tttLosses;
         const WIN_LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
         function renderTTT() {
-            const boardEl = document.getElementById('tttBoard');
-            boardEl.innerHTML = '';
-            tttBoard.forEach((val, i) => {
+            const boardEl = document.getElementById('tttBoard'); boardEl.innerHTML='';
+            tttBoard.forEach((val,i) => {
                 const cell = document.createElement('div');
-                cell.style.cssText = `
-                    background: rgba(255,255,255,0.08);
-                    border-radius: 12px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 48px;
-                    font-weight: 900;
-                    cursor: pointer;
-                    transition: background 0.2s;
-                    color: ${val === 'X' ? '#FF8C00' : (val === 'O' ? '#2196F3' : '#fff')};
-                    font-family: inherit;
-                `;
+                cell.style.cssText = `background:rgba(255,255,255,0.08);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:900;cursor:pointer;transition:background 0.2s;color:${val==='X'?'#FF8C00':(val==='O'?'#2196F3':'#fff')};font-family:inherit;`;
                 cell.textContent = val;
-                cell.onmouseenter = () => { if (tttRunning && val === '') cell.style.background = 'rgba(255,255,255,0.18)'; };
-                cell.onmouseleave = () => { cell.style.background = 'rgba(255,255,255,0.08)'; };
+                cell.onmouseenter = () => { if (tttRunning && val==='') cell.style.background='rgba(255,255,255,0.18)'; };
+                cell.onmouseleave = () => { cell.style.background='rgba(255,255,255,0.08)'; };
                 cell.onclick = () => tttClick(i);
                 boardEl.appendChild(cell);
             });
         }
         function tttClick(index) {
-            if (!tttRunning || !tttPlayerTurn) return;
-            if (tttBoard[index] !== '') return;
-            tttBoard[index] = 'X';
-            renderTTT();
+            if (!tttRunning || !tttPlayerTurn || tttBoard[index]!=='') return;
+            tttBoard[index]='X'; renderTTT();
             if (checkTTTWin('X')) { endTTT('win'); return; }
             if (isTTTFull()) { endTTT('draw'); return; }
-            tttPlayerTurn = false;
-            setTimeout(tttAIMove, 400);
+            tttPlayerTurn=false; setTimeout(tttAIMove,400);
         }
-        function checkWinner(b) {
-            for (const line of WIN_LINES) {
-                const [a, c, d] = line;
-                if (b[a] && b[a] === b[c] && b[a] === b[d]) return b[a];
-            }
-            return null;
-        }
+        function checkWinner(b) { for (const line of WIN_LINES) { const [a,c,d]=line; if (b[a] && b[a]===b[c] && b[a]===b[d]) return b[a]; } return null; }
         function tttAIMove() {
             if (!tttRunning) return;
             function minimax(board, depth, isMaximizing, alpha, beta) {
                 const winner = checkWinner(board);
-                if (winner === 'O') return 10 - depth;
-                if (winner === 'X') return depth - 10;
-                if (board.every(v => v !== '')) return 0;
+                if (winner==='O') return 10-depth;
+                if (winner==='X') return depth-10;
+                if (board.every(v=>v!=='')) return 0;
                 if (isMaximizing) {
-                    let best = -Infinity;
-                    for (let i = 0; i < 9; i++) {
-                        if (board[i] === '') {
-                            board[i] = 'O';
-                            const score = minimax(board, depth + 1, false, alpha, beta);
-                            board[i] = '';
-                            best = Math.max(best, score);
-                            alpha = Math.max(alpha, score);
-                            if (beta <= alpha) break;
-                        }
+                    let best=-Infinity;
+                    for (let i=0;i<9;i++) if (board[i]==='') {
+                        board[i]='O'; const score=minimax(board,depth+1,false,alpha,beta); board[i]='';
+                        best=Math.max(best,score); alpha=Math.max(alpha,score); if (beta<=alpha) break;
                     }
                     return best;
                 } else {
-                    let best = Infinity;
-                    for (let i = 0; i < 9; i++) {
-                        if (board[i] === '') {
-                            board[i] = 'X';
-                            const score = minimax(board, depth + 1, true, alpha, beta);
-                            board[i] = '';
-                            best = Math.min(best, score);
-                            beta = Math.min(beta, score);
-                            if (beta <= alpha) break;
-                        }
+                    let best=Infinity;
+                    for (let i=0;i<9;i++) if (board[i]==='') {
+                        board[i]='X'; const score=minimax(board,depth+1,true,alpha,beta); board[i]='';
+                        best=Math.min(best,score); beta=Math.min(beta,score); if (beta<=alpha) break;
                     }
                     return best;
                 }
             }
-            let bestScore = -Infinity;
-            let bestMove = -1;
-            for (let i = 0; i < 9; i++) {
-                if (tttBoard[i] === '') {
-                    tttBoard[i] = 'O';
-                    const score = minimax([...tttBoard], 0, false, -Infinity, Infinity);
-                    tttBoard[i] = '';
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestMove = i;
-                    }
-                }
+            let bestScore=-Infinity, bestMove=-1;
+            for (let i=0;i<9;i++) if (tttBoard[i]==='') {
+                tttBoard[i]='O'; const score=minimax([...tttBoard],0,false,-Infinity,Infinity); tttBoard[i]='';
+                if (score>bestScore) { bestScore=score; bestMove=i; }
             }
-            if (bestMove !== -1) {
-                tttBoard[bestMove] = 'O';
-                renderTTT();
+            if (bestMove!==-1) {
+                tttBoard[bestMove]='O'; renderTTT();
                 if (checkTTTWin('O')) { endTTT('loss'); return; }
                 if (isTTTFull()) { endTTT('draw'); return; }
             }
-            tttPlayerTurn = true;
+            tttPlayerTurn=true;
         }
-        function checkTTTWin(player) { return WIN_LINES.some(line => line.every(i => tttBoard[i] === player)); }
-        function isTTTFull() { return tttBoard.every(v => v !== ''); }
+        function checkTTTWin(player) { return WIN_LINES.some(line => line.every(i => tttBoard[i]===player)); }
+        function isTTTFull() { return tttBoard.every(v => v!==''); }
         function endTTT(result) {
-            tttRunning = false;
-            const overlay = document.getElementById('tttOverlay');
-            const title = document.getElementById('tttOverTitle');
-            const text = document.getElementById('tttOverText');
-            if (result === 'win') {
-                tttWins++;
-                localStorage.setItem('ki-ttt-wins', tttWins);
-                document.getElementById('tttWins').textContent = tttWins;
-                title.textContent = '🎉 Ты победил!';
-                text.textContent = 'Отличная игра!';
-            } else if (result === 'loss') {
-                tttLosses++;
-                localStorage.setItem('ki-ttt-losses', tttLosses);
-                document.getElementById('tttLosses').textContent = tttLosses;
-                title.textContent = '😔 Ты проиграл';
-                text.textContent = 'Попробуй ещё раз!';
-            } else {
-                tttDraws++;
-                localStorage.setItem('ki-ttt-draws', tttDraws);
-                document.getElementById('tttDraws').textContent = tttDraws;
-                title.textContent = '🤝 Ничья';
-                text.textContent = 'Хорошая игра!';
-            }
+            tttRunning=false;
+            const overlay=document.getElementById('tttOverlay');
+            const title=document.getElementById('tttOverTitle');
+            const text=document.getElementById('tttOverText');
+            if (result==='win') { tttWins++; localStorage.setItem('ki-ttt-wins',tttWins); document.getElementById('tttWins').textContent=tttWins; title.textContent='🎉 Ты победил!'; text.textContent='Отличная игра!'; }
+            else if (result==='loss') { tttLosses++; localStorage.setItem('ki-ttt-losses',tttLosses); document.getElementById('tttLosses').textContent=tttLosses; title.textContent='😔 Ты проиграл'; text.textContent='Попробуй ещё раз!'; }
+            else { tttDraws++; localStorage.setItem('ki-ttt-draws',tttDraws); document.getElementById('tttDraws').textContent=tttDraws; title.textContent='🤝 Ничья'; text.textContent='Хорошая игра!'; }
             overlay.classList.add('active');
         }
         function startTTT() {
-            tttBoard = ['', '', '', '', '', '', '', '', ''];
-            tttRunning = true;
-            tttPlayerTurn = true;
-            document.getElementById('tttOverlay').classList.remove('active');
-            renderTTT();
+            tttBoard=['','','','','','','','','']; tttRunning=true; tttPlayerTurn=true;
+            document.getElementById('tttOverlay').classList.remove('active'); renderTTT();
         }
         renderTTT();
 
-        // САПЁР
-        let minesBoard, minesRows = 9, minesCols = 9, minesCount = 10;
+        // ===== САПЁР =====
+        let minesBoard, minesRows=9, minesCols=9, minesCount=10;
         let minesGameOver, minesTimerInterval, minesTime;
-
         function startMines() {
-            minesBoard = [];
-            minesGameOver = false;
-            minesTime = 0;
+            minesBoard=[]; minesGameOver=false; minesTime=0;
             clearInterval(minesTimerInterval);
-            document.getElementById('minesTimer').textContent = '0';
-            document.getElementById('minesLeft').textContent = minesCount;
-
-            for (let r = 0; r < minesRows; r++) {
-                minesBoard[r] = [];
-                for (let c = 0; c < minesCols; c++) {
-                    minesBoard[r][c] = { mine: false, count: 0, revealed: false, flagged: false };
-                }
+            document.getElementById('minesTimer').textContent='0';
+            document.getElementById('minesLeft').textContent=minesCount;
+            for (let r=0;r<minesRows;r++) { minesBoard[r]=[]; for (let c=0;c<minesCols;c++) minesBoard[r][c]={mine:false,count:0,revealed:false,flagged:false}; }
+            let placed=0;
+            while (placed<minesCount) {
+                const r=Math.floor(Math.random()*minesRows), c=Math.floor(Math.random()*minesCols);
+                if (!minesBoard[r][c].mine) { minesBoard[r][c].mine=true; placed++; }
             }
-
-            let placed = 0;
-            while (placed < minesCount) {
-                const r = Math.floor(Math.random() * minesRows);
-                const c = Math.floor(Math.random() * minesCols);
-                if (!minesBoard[r][c].mine) {
-                    minesBoard[r][c].mine = true;
-                    placed++;
+            for (let r=0;r<minesRows;r++) for (let c=0;c<minesCols;c++) {
+                if (minesBoard[r][c].mine) continue;
+                let count=0;
+                for (let dr=-1;dr<=1;dr++) for (let dc=-1;dc<=1;dc++) {
+                    const nr=r+dr, nc=c+dc;
+                    if (nr>=0 && nr<minesRows && nc>=0 && nc<minesCols && minesBoard[nr][nc].mine) count++;
                 }
+                minesBoard[r][c].count=count;
             }
-
-            for (let r = 0; r < minesRows; r++) {
-                for (let c = 0; c < minesCols; c++) {
-                    if (minesBoard[r][c].mine) continue;
-                    let count = 0;
-                    for (let dr = -1; dr <= 1; dr++) {
-                        for (let dc = -1; dc <= 1; dc++) {
-                            const nr = r + dr, nc = c + dc;
-                            if (nr >= 0 && nr < minesRows && nc >= 0 && nc < minesCols && minesBoard[nr][nc].mine) count++;
-                        }
-                    }
-                    minesBoard[r][c].count = count;
-                }
-            }
-
             renderMines();
-            minesTimerInterval = setInterval(() => {
-                if (!minesGameOver) {
-                    minesTime++;
-                    document.getElementById('minesTimer').textContent = minesTime;
+            minesTimerInterval=setInterval(()=>{ if (!minesGameOver) { minesTime++; document.getElementById('minesTimer').textContent=minesTime; } },1000);
+        }
+        function renderMines() {
+            const boardEl=document.getElementById('minesBoard');
+            boardEl.style.gridTemplateColumns=`repeat(${minesCols},36px)`;
+            boardEl.innerHTML='';
+            for (let r=0;r<minesRows;r++) for (let c=0;c<minesCols;c++) {
+                const cell=minesBoard[r][c]; const div=document.createElement('div'); const size=36;
+                let bg='rgba(255,255,255,0.1)', text='', color='#fff';
+                if (cell.revealed) {
+                    bg='rgba(0,0,0,0.3)';
+                    if (cell.mine) text='💣';
+                    else if (cell.count>0) { text=cell.count; const colors=['','#4FC3F7','#81C784','#FFB74D','#E57373','#BA68C8','#F06292','#A1887F','#90A4AE']; color=colors[cell.count]||'#fff'; }
+                } else if (cell.flagged) text='🚩';
+                div.style.cssText=`width:${size}px;height:${size}px;background:${bg};border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;color:${color};cursor:pointer;user-select:none;transition:background 0.1s;border:1px solid rgba(255,255,255,0.05);`;
+                div.textContent=text;
+                let tapTimer=null, lastTapTime=0;
+                div.addEventListener('click', (e) => {
+                    if (minesGameOver) return;
+                    if (e.pointerType==='mouse' || e.pointerType==='pen') {
+                        if (cell.flagged) { cell.flagged=false; renderMines(); return; }
+                        if (cell.revealed) return;
+                        revealMinesCell(r,c); renderMines(); return;
+                    }
+                    const now=Date.now();
+                    if (cell.flagged) { cell.flagged=false; renderMines(); return; }
+                    if (cell.revealed) return;
+                    if (now-lastTapTime<350) {
+                        if (tapTimer) { clearTimeout(tapTimer); tapTimer=null; }
+                        cell.flagged=true; renderMines(); lastTapTime=0;
+                    } else {
+                        lastTapTime=now;
+                        if (tapTimer) clearTimeout(tapTimer);
+                        tapTimer=setTimeout(()=>{ if (!cell.flagged && !cell.revealed && !minesGameOver) { revealMinesCell(r,c); renderMines(); } tapTimer=null; },350);
+                    }
+                });
+                div.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    if (minesGameOver) return;
+                    if (cell.revealed) return;
+                    if (!cell.flagged) { cell.flagged=true; renderMines(); }
+                });
+                boardEl.appendChild(div);
+            }
+        }
+        function revealMinesCell(r,c) {
+            const cell=minesBoard[r][c];
+            if (cell.revealed || cell.flagged) return;
+            cell.revealed=true;
+            if (cell.mine) {
+                minesGameOver=true; clearInterval(minesTimerInterval);
+                for (let i=0;i<minesRows;i++) for (let j=0;j<minesCols;j++) if (minesBoard[i][j].mine) minesBoard[i][j].revealed=true;
+                renderMines(); alert('💥 Ты подорвался! Игра окончена.'); return;
+            }
+            if (cell.count===0) {
+                for (let dr=-1;dr<=1;dr++) for (let dc=-1;dc<=1;dc++) {
+                    const nr=r+dr, nc=c+dc;
+                    if (nr>=0 && nr<minesRows && nc>=0 && nc<minesCols) revealMinesCell(nr,nc);
+                }
+            }
+            let safeRevealed=0, totalSafe=minesRows*minesCols-minesCount;
+            for (let i=0;i<minesRows;i++) for (let j=0;j<minesCols;j++) if (minesBoard[i][j].revealed && !minesBoard[i][j].mine) safeRevealed++;
+            if (safeRevealed===totalSafe && !minesGameOver) { minesGameOver=true; clearInterval(minesTimerInterval); alert('🎉 Победа! Ты нашёл все безопасные клетки!'); }
+        }
+        startMines();
+
+        // ===== ПЯТНАШКИ =====
+        let puzzleBoard=[], puzzleMoves=0, puzzleTimer=0, puzzleTimerInterval=null, puzzleRunning=false, puzzleSize=4;
+        function initPuzzle() {
+            puzzleBoard=[]; for (let i=1;i<puzzleSize*puzzleSize;i++) puzzleBoard.push(i); puzzleBoard.push(0);
+            puzzleMoves=0; puzzleTimer=0;
+            document.getElementById('puzzleMoves').textContent='0';
+            document.getElementById('puzzleTimer').textContent='0';
+            clearInterval(puzzleTimerInterval);
+            puzzleTimerInterval=setInterval(()=>{ if (puzzleRunning) { puzzleTimer++; document.getElementById('puzzleTimer').textContent=puzzleTimer; } },1000);
+        }
+        function shufflePuzzle() {
+            const emptyIndex=puzzleBoard.indexOf(0);
+            const emptyRow=Math.floor(emptyIndex/puzzleSize), emptyCol=emptyIndex%puzzleSize;
+            const neighbors=[];
+            if (emptyRow>0) neighbors.push(emptyIndex-puzzleSize);
+            if (emptyRow<puzzleSize-1) neighbors.push(emptyIndex+puzzleSize);
+            if (emptyCol>0) neighbors.push(emptyIndex-1);
+            if (emptyCol<puzzleSize-1) neighbors.push(emptyIndex+1);
+            const randomNeighbor=neighbors[Math.floor(Math.random()*neighbors.length)];
+            [puzzleBoard[emptyIndex], puzzleBoard[randomNeighbor]]=[puzzleBoard[randomNeighbor], puzzleBoard[emptyIndex]];
+        }
+        function renderPuzzle() {
+            const boardEl=document.getElementById('puzzleBoard'); boardEl.innerHTML='';
+            puzzleBoard.forEach((val,i)=>{
+                const tile=document.createElement('div'); const isEmpty=val===0;
+                tile.style.cssText=`width:80px;height:80px;background:${isEmpty?'rgba(255,255,255,0.05)':'var(--primary)'};border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:${isEmpty?'transparent':'#fff'};cursor:${isEmpty?'default':'pointer'};transition:background 0.2s,transform 0.15s;font-family:inherit;border:1px solid var(--card-border);user-select:none;`;
+                tile.textContent=isEmpty?'':val; tile.onclick=()=>movePuzzle(i); boardEl.appendChild(tile);
+            });
+        }
+        function movePuzzle(index) {
+            if (!puzzleRunning) return;
+            const emptyIndex=puzzleBoard.indexOf(0);
+            const row=Math.floor(index/puzzleSize), col=index%puzzleSize;
+            const emptyRow=Math.floor(emptyIndex/puzzleSize), emptyCol=emptyIndex%puzzleSize;
+            if ((Math.abs(row-emptyRow)+Math.abs(col-emptyCol))!==1) return;
+            [puzzleBoard[index], puzzleBoard[emptyIndex]]=[puzzleBoard[emptyIndex], puzzleBoard[index]];
+            puzzleMoves++; document.getElementById('puzzleMoves').textContent=puzzleMoves;
+            renderPuzzle(); checkPuzzleWin();
+        }
+        function checkPuzzleWin() {
+            for (let i=0;i<puzzleSize*puzzleSize-1;i++) if (puzzleBoard[i]!==i+1) return;
+            puzzleRunning=false; clearInterval(puzzleTimerInterval);
+            const overlay=document.getElementById('puzzleOverlay');
+            document.getElementById('puzzleOverTitle').textContent='🎉 Победа!';
+            document.getElementById('puzzleOverText').textContent=`Ты собрал пазл за ${puzzleMoves} ходов и ${puzzleTimer} секунд!`;
+            overlay.classList.add('active');
+        }
+        function startPuzzle() {
+            document.getElementById('puzzleOverlay').classList.remove('active');
+            initPuzzle(); for (let i=0;i<200;i++) shufflePuzzle();
+            puzzleRunning=true; renderPuzzle();
+        }
+        document.addEventListener('keydown', (e)=>{
+            if (!puzzleRunning) return;
+            const emptyIndex=puzzleBoard.indexOf(0);
+            const emptyRow=Math.floor(emptyIndex/puzzleSize), emptyCol=emptyIndex%puzzleSize;
+            let targetIndex=-1;
+            const keyMap={'ArrowUp':'up','ArrowDown':'down','ArrowLeft':'left','ArrowRight':'right','w':'up','s':'down','a':'left','d':'right','W':'up','S':'down','A':'left','D':'right','ц':'up','ы':'down','ф':'left','в':'right','Ц':'up','Ы':'down','Ф':'left','В':'right'};
+            const dir=keyMap[e.key]; if (!dir) return; e.preventDefault();
+            if (dir==='up' && emptyRow<puzzleSize-1) targetIndex=emptyIndex+puzzleSize;
+            else if (dir==='down' && emptyRow>0) targetIndex=emptyIndex-puzzleSize;
+            else if (dir==='left' && emptyCol<puzzleSize-1) targetIndex=emptyIndex+1;
+            else if (dir==='right' && emptyCol>0) targetIndex=emptyIndex-1;
+            if (targetIndex!==-1) movePuzzle(targetIndex);
+        });
+        const puzzleBoardEl=document.getElementById('puzzleBoard');
+        let puzzleTouchX=0, puzzleTouchY=0;
+        puzzleBoardEl.addEventListener('touchstart',(e)=>{ puzzleTouchX=e.touches[0].clientX; puzzleTouchY=e.touches[0].clientY; },{passive:true});
+        puzzleBoardEl.addEventListener('touchend',(e)=>{
+            if (!puzzleRunning) return;
+            const dx=e.changedTouches[0].clientX-puzzleTouchX, dy=e.changedTouches[0].clientY-puzzleTouchY;
+            if (Math.abs(dx)<30 && Math.abs(dy)<30) return;
+            const emptyIndex=puzzleBoard.indexOf(0);
+            const emptyRow=Math.floor(emptyIndex/puzzleSize), emptyCol=emptyIndex%puzzleSize;
+            let targetIndex=-1;
+            if (Math.abs(dx)>Math.abs(dy)) {
+                if (dx>0 && emptyCol>0) targetIndex=emptyIndex-1;
+                else if (dx<0 && emptyCol<puzzleSize-1) targetIndex=emptyIndex+1;
+            } else {
+                if (dy>0 && emptyRow>0) targetIndex=emptyIndex-puzzleSize;
+                else if (dy<0 && emptyRow<puzzleSize-1) targetIndex=emptyIndex+puzzleSize;
+            }
+            if (targetIndex!==-1) movePuzzle(targetIndex);
+        },{passive:true});
+        initPuzzle(); renderPuzzle();
+
+        // ===== МОРСКОЙ БОЙ =====
+        let navalPlayerBoard, navalEnemyBoard, navalPlayerShips, navalEnemyShips;
+        let navalPhase='placement', navalPlayerHits=0, navalEnemyHits=0, navalPlayerTurn=true;
+        let navalShipSizes=[4,3,3,2,2,2,1,1,1,1], navalCurrentShipIndex=0, navalHorizontal=true;
+        function initNaval() {
+            navalPlayerBoard=Array(10).fill(null).map(()=>Array(10).fill(0));
+            navalEnemyBoard=Array(10).fill(null).map(()=>Array(10).fill(0));
+            navalPlayerShips=[]; navalEnemyShips=[]; navalPlayerHits=0; navalEnemyHits=0; navalPlayerTurn=true;
+            navalPhase='placement'; navalCurrentShipIndex=0;
+            document.getElementById('navalHits').textContent='0';
+            document.getElementById('navalEnemyHits').textContent='0';
+            document.getElementById('navalStatus').textContent='Расставь корабли: нажми на клетку, чтобы поставить корабль';
+            renderNavalBoards(); placeEnemyShips();
+        }
+        function placeEnemyShips() {
+            navalShipSizes.forEach(size=>{
+                let placed=false;
+                while (!placed) {
+                    const horizontal=Math.random()>0.5;
+                    const row=Math.floor(Math.random()*10), col=Math.floor(Math.random()*10);
+                    if (canPlaceShip(navalEnemyBoard,row,col,size,horizontal)) {
+                        const cells=[];
+                        for (let i=0;i<size;i++) { const r=horizontal?row:row+i, c=horizontal?col+i:col; navalEnemyBoard[r][c]=1; cells.push({r,c}); }
+                        navalEnemyShips.push({cells,hits:0,size}); placed=true;
+                    }
+                }
+            });
+        }
+        function canPlaceShip(board,row,col,size,horizontal) {
+            if (horizontal && col+size>10) return false;
+            if (!horizontal && row+size>10) return false;
+            for (let i=0;i<size;i++) {
+                const r=horizontal?row:row+i, c=horizontal?col+i:col;
+                if (board[r][c]!==0) return false;
+                for (let dr=-1;dr<=1;dr++) for (let dc=-1;dc<=1;dc++) {
+                    const nr=r+dr, nc=c+dc;
+                    if (nr>=0 && nr<10 && nc>=0 && nc<10 && board[nr][nc]!==0) return false;
+                }
+            }
+            return true;
+        }
+        function renderNavalBoards() {
+            const playerEl=document.getElementById('navalPlayerBoard');
+            const enemyEl=document.getElementById('navalEnemyBoard');
+            playerEl.innerHTML=''; enemyEl.innerHTML='';
+            for (let r=0;r<10;r++) for (let c=0;c<10;c++) {
+                const pCell=document.createElement('div');
+                pCell.style.cssText=`width:32px;height:32px;background:${navalPlayerBoard[r][c]===1?'rgba(76,175,80,0.6)':'rgba(255,255,255,0.08)'};border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);`;
+                if (navalPhase==='placement') { pCell.onclick=()=>placePlayerShip(r,c); pCell.oncontextmenu=(e)=>{ e.preventDefault(); navalHorizontal=!navalHorizontal; document.getElementById('navalStatus').textContent=`Ориентация: ${navalHorizontal?'горизонтальная':'вертикальная'}`; }; }
+                playerEl.appendChild(pCell);
+                const eCell=document.createElement('div');
+                let eBg='rgba(255,255,255,0.08)', eText='';
+                if (navalEnemyBoard[r][c]===2) { eBg='rgba(255,0,0,0.6)'; eText='💥'; }
+                else if (navalEnemyBoard[r][c]===3) { eBg='rgba(255,255,255,0.3)'; eText='💧'; }
+                else if (navalEnemyBoard[r][c]===1 && navalPhase==='over') eBg='rgba(76,175,80,0.6)';
+                eCell.style.cssText=`width:32px;height:32px;background:${eBg};border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:${navalPhase==='battle'?'pointer':'default'};border:1px solid rgba(255,255,255,0.1);`;
+                eCell.textContent=eText;
+                if (navalPhase==='battle') eCell.onclick=()=>shootEnemy(r,c);
+                enemyEl.appendChild(eCell);
+            }
+        }
+        function placePlayerShip(row,col) {
+            if (navalPhase!=='placement' || navalCurrentShipIndex>=navalShipSizes.length) return;
+            const size=navalShipSizes[navalCurrentShipIndex];
+            if (!canPlaceShip(navalPlayerBoard,row,col,size,navalHorizontal)) return;
+            const cells=[];
+            for (let i=0;i<size;i++) { const r=navalHorizontal?row:row+i, c=navalHorizontal?col+i:col; navalPlayerBoard[r][c]=1; cells.push({r,c}); }
+            navalPlayerShips.push({cells,hits:0,size}); navalCurrentShipIndex++;
+            if (navalCurrentShipIndex>=navalShipSizes.length) { navalPhase='battle'; document.getElementById('navalStatus').textContent='Твой ход! Клик по полю врага — выстрел.'; document.getElementById('navalStartBtn').style.display='none'; }
+            else document.getElementById('navalStatus').textContent=`Поставь корабль размером ${navalShipSizes[navalCurrentShipIndex]} (правый клик — поворот)`;
+            renderNavalBoards();
+        }
+        function shootEnemy(row,col) {
+            if (navalPhase!=='battle' || !navalPlayerTurn) return;
+            if (navalEnemyBoard[row][col]===2 || navalEnemyBoard[row][col]===3) return;
+            const ship=navalEnemyShips.find(s=>s.cells.some(c=>c.r===row && c.c===col));
+            if (ship) { navalEnemyBoard[row][col]=2; ship.hits++; navalPlayerHits++; document.getElementById('navalHits').textContent=navalPlayerHits; }
+            else navalEnemyBoard[row][col]=3;
+            renderNavalBoards(); checkNavalWin();
+            if (navalPhase==='battle') { navalPlayerTurn=false; setTimeout(enemyTurn,800); }
+        }
+        function enemyTurn() {
+            if (navalPhase!=='battle') return;
+            let row, col;
+            do { row=Math.floor(Math.random()*10); col=Math.floor(Math.random()*10); }
+            while (navalPlayerBoard[row][col]===2 || navalPlayerBoard[row][col]===3);
+            const ship=navalPlayerShips.find(s=>s.cells.some(c=>c.r===row && c.c===col));
+            if (ship) { navalPlayerBoard[row][col]=2; ship.hits++; navalEnemyHits++; document.getElementById('navalEnemyHits').textContent=navalEnemyHits; }
+            else navalPlayerBoard[row][col]=3;
+            renderNavalBoards(); checkNavalWin();
+            if (navalPhase==='battle') { navalPlayerTurn=true; document.getElementById('navalStatus').textContent='Твой ход!'; }
+        }
+        function checkNavalWin() {
+            const playerWon=navalEnemyShips.every(s=>s.hits>=s.size);
+            const enemyWon=navalPlayerShips.every(s=>s.hits>=s.size);
+            if (playerWon) { navalPhase='over'; document.getElementById('navalStatus').textContent='🎉 Ты победил! Все корабли врага потоплены!'; renderNavalBoards(); }
+            else if (enemyWon) { navalPhase='over'; document.getElementById('navalStatus').textContent='💀 Ты проиграл. Все твои корабли потоплены.'; renderNavalBoards(); }
+        }
+        function startNaval() {
+            if (navalPhase==='placement') { document.getElementById('navalStatus').textContent='Сначала расставь все корабли!'; return; }
+            initNaval();
+        }
+        function resetNaval() { initNaval(); document.getElementById('navalStartBtn').style.display='inline-block'; }
+        initNaval();
+
+        // ===== ПАРЫ (MEMORY) =====
+        let memoryCards=[], memoryFlipped=[], memoryMoves=0, memoryFound=0, memoryLock=false;
+        const MEMORY_EMOJIS = ['🍊','🍎','🍌','🍇','🍓','🍒','🥝','🍑'];
+        function startMemory() {
+            memoryCards=[]; memoryFlipped=[]; memoryMoves=0; memoryFound=0; memoryLock=false;
+            document.getElementById('memoryMoves').textContent='0';
+            document.getElementById('memoryFound').textContent='0';
+            const deck = [...MEMORY_EMOJIS, ...MEMORY_EMOJIS];
+            // Перемешиваем
+            for (let i=deck.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+            memoryCards = deck.map((emoji, i) => ({ emoji, flipped: false, matched: false, id: i }));
+            renderMemory();
+        }
+        function renderMemory() {
+            const grid = document.getElementById('memoryGrid');
+            grid.innerHTML='';
+            memoryCards.forEach((card, i) => {
+                const div = document.createElement('div');
+                div.className = 'memory-card' + (card.flipped ? ' flipped' : '') + (card.matched ? ' matched' : '');
+                div.textContent = card.flipped || card.matched ? card.emoji : '?';
+                div.onclick = () => flipMemoryCard(i);
+                grid.appendChild(div);
+            });
+        }
+        function flipMemoryCard(index) {
+            if (memoryLock) return;
+            const card = memoryCards[index];
+            if (card.flipped || card.matched) return;
+            card.flipped = true;
+            memoryFlipped.push(index);
+            renderMemory();
+            if (memoryFlipped.length === 2) {
+                memoryMoves++;
+                document.getElementById('memoryMoves').textContent = memoryMoves;
+                memoryLock = true;
+                const [a, b] = memoryFlipped;
+                if (memoryCards[a].emoji === memoryCards[b].emoji) {
+                    memoryCards[a].matched = true;
+                    memoryCards[b].matched = true;
+                    memoryFound++;
+                    document.getElementById('memoryFound').textContent = memoryFound;
+                    memoryFlipped = [];
+                    memoryLock = false;
+                    renderMemory();
+                    if (memoryFound === MEMORY_EMOJIS.length) {
+                        setTimeout(() => alert('🎉 Победа! Ты нашёл все пары!'), 300);
+                    }
+                } else {
+                    setTimeout(() => {
+                        memoryCards[a].flipped = false;
+                        memoryCards[b].flipped = false;
+                        memoryFlipped = [];
+                        memoryLock = false;
+                        renderMemory();
+                    }, 800);
+                }
+            }
+        }
+        startMemory();
+
+        // ===== КЛИКЕР =====
+        let clickerScore = parseInt(localStorage.getItem('ki-clicker-score') || '0');
+        let clickerPerClick = parseInt(localStorage.getItem('ki-clicker-perclick') || '1');
+        let clickerPerSec = parseInt(localStorage.getItem('ki-clicker-persec') || '0');
+        let clickerMultiplier = parseInt(localStorage.getItem('ki-clicker-mult') || '1');
+        let clickerUpg1Cost = parseInt(localStorage.getItem('ki-clicker-upg1') || '10');
+        let clickerUpg2Cost = parseInt(localStorage.getItem('ki-clicker-upg2') || '50');
+        let clickerUpg3Cost = parseInt(localStorage.getItem('ki-clicker-upg3') || '200');
+        let clickerUpg3Bought = localStorage.getItem('ki-clicker-upg3-bought') === 'true';
+        function updateClickerUI() {
+            document.getElementById('clickerScore').textContent = Math.floor(clickerScore);
+            document.getElementById('clickerPerSec').textContent = clickerPerSec * clickerMultiplier;
+            document.getElementById('upg1').textContent = `+1 за клик (${clickerUpg1Cost})`;
+            document.getElementById('upg2').textContent = `+1 в сек (${clickerUpg2Cost})`;
+            document.getElementById('upg3').textContent = clickerUpg3Bought ? `×2 куплено` : `×2 множитель (${clickerUpg3Cost})`;
+            document.getElementById('upg1').disabled = clickerScore < clickerUpg1Cost;
+            document.getElementById('upg2').disabled = clickerScore < clickerUpg2Cost;
+            document.getElementById('upg3').disabled = clickerUpg3Bought || clickerScore < clickerUpg3Cost;
+        }
+        function clickerClick() {
+            clickerScore += clickerPerClick * clickerMultiplier;
+            updateClickerUI();
+            saveClicker();
+        }
+        function buyUpgrade(n) {
+            if (n === 1 && clickerScore >= clickerUpg1Cost) {
+                clickerScore -= clickerUpg1Cost; clickerPerClick++; clickerUpg1Cost = Math.floor(clickerUpg1Cost * 1.5);
+            } else if (n === 2 && clickerScore >= clickerUpg2Cost) {
+                clickerScore -= clickerUpg2Cost; clickerPerSec++; clickerUpg2Cost = Math.floor(clickerUpg2Cost * 1.5);
+            } else if (n === 3 && clickerScore >= clickerUpg3Cost && !clickerUpg3Bought) {
+                clickerScore -= clickerUpg3Cost; clickerMultiplier = 2; clickerUpg3Bought = true;
+            }
+            updateClickerUI(); saveClicker();
+        }
+        function saveClicker() {
+            localStorage.setItem('ki-clicker-score', clickerScore);
+            localStorage.setItem('ki-clicker-perclick', clickerPerClick);
+            localStorage.setItem('ki-clicker-persec', clickerPerSec);
+            localStorage.setItem('ki-clicker-mult', clickerMultiplier);
+            localStorage.setItem('ki-clicker-upg1', clickerUpg1Cost);
+            localStorage.setItem('ki-clicker-upg2', clickerUpg2Cost);
+            localStorage.setItem('ki-clicker-upg3', clickerUpg3Cost);
+            localStorage.setItem('ki-clicker-upg3-bought', clickerUpg3Bought);
+        }
+        setInterval(() => {
+            if (clickerPerSec > 0) { clickerScore += clickerPerSec * clickerMultiplier; updateClickerUI(); saveClicker(); }
+        }, 1000);
+        updateClickerUI();
+
+        // ===== ТИР =====
+        let shootScore=0, shootTime=30, shootTimerInterval=null, shootActive=false;
+        const shootArea = document.getElementById('shootArea');
+        function startShoot() {
+            document.getElementById('shootOverlay').classList.remove('active');
+            shootScore=0; shootTime=30; shootActive=true;
+            document.getElementById('shootScore').textContent='0';
+            document.getElementById('shootTimer').textContent='30';
+            // Удаляем старые мишени
+            shootArea.querySelectorAll('.target').forEach(t => t.remove());
+            spawnTarget();
+            spawnTarget();
+            spawnTarget();
+            clearInterval(shootTimerInterval);
+            shootTimerInterval = setInterval(() => {
+                if (!shootActive) { clearInterval(shootTimerInterval); return; }
+                shootTime--;
+                document.getElementById('shootTimer').textContent = shootTime;
+                if (shootTime <= 0) {
+                    shootActive = false; clearInterval(shootTimerInterval);
+                    shootArea.querySelectorAll('.target').forEach(t => t.remove());
+                    const overlay = document.getElementById('shootOverlay');
+                    overlay.classList.add('active');
+                    overlay.querySelector('h3').textContent = '⏰ Время вышло!';
+                    overlay.querySelector('p').textContent = `Твой счёт: ${shootScore}`;
+                    overlay.querySelector('button').textContent = '🔄 Заново';
                 }
             }, 1000);
         }
-
-        function renderMines() {
-            const boardEl = document.getElementById('minesBoard');
-            boardEl.style.gridTemplateColumns = `repeat(${minesCols}, 36px)`;
-            boardEl.innerHTML = '';
-            for (let r = 0; r < minesRows; r++) {
-                for (let c = 0; c < minesCols; c++) {
-                    const cell = minesBoard[r][c];
-                    const div = document.createElement('div');
-                    const size = 36;
-                    let bg = 'rgba(255,255,255,0.1)';
-                    let text = '';
-                    let color = '#fff';
-
-                    if (cell.revealed) {
-                        bg = 'rgba(0,0,0,0.3)';
-                        if (cell.mine) { text = '💣'; }
-                        else if (cell.count > 0) {
-                            text = cell.count;
-                            const colors = ['', '#4FC3F7', '#81C784', '#FFB74D', '#E57373', '#BA68C8', '#F06292', '#A1887F', '#90A4AE'];
-                            color = colors[cell.count] || '#fff';
-                        }
-                    } else if (cell.flagged) {
-                        text = '🚩';
-                    }
-
-                    div.style.cssText = `
-                        width: ${size}px; height: ${size}px;
-                        background: ${bg};
-                        border-radius: 6px;
-                        display: flex; align-items: center; justify-content: center;
-                        font-weight: 900; font-size: 16px; color: ${color};
-                        cursor: pointer; user-select: none;
-                        transition: background 0.1s;
-                        border: 1px solid rgba(255,255,255,0.05);
-                    `;
-                    div.textContent = text;
-
-                    // ПК: левая кнопка — открыть/убрать флажок, правая — поставить флажок
-                    // Телефон: двойной тап — флажок, обычный тап — открыть/убрать
-                    let tapTimer = null;
-                    let lastTapTime = 0;
-
-                    div.addEventListener('click', (e) => {
-                        if (minesGameOver) return;
-
-                        // ПК (мышь) — левая кнопка
-                        if (e.pointerType === 'mouse' || e.pointerType === 'pen') {
-                            if (cell.flagged) {
-                                cell.flagged = false;
-                                renderMines();
-                                return;
-                            }
-                            if (cell.revealed) return;
-                            revealMinesCell(r, c);
-                            renderMines();
-                            return;
-                        }
-
-                        // Телефон — двойной тап
-                        const now = Date.now();
-
-                        if (cell.flagged) {
-                            cell.flagged = false;
-                            renderMines();
-                            return;
-                        }
-                        if (cell.revealed) return;
-
-                        if (now - lastTapTime < 350) {
-                            if (tapTimer) {
-                                clearTimeout(tapTimer);
-                                tapTimer = null;
-                            }
-                            cell.flagged = true;
-                            renderMines();
-                            lastTapTime = 0;
-                        } else {
-                            lastTapTime = now;
-                            if (tapTimer) clearTimeout(tapTimer);
-                            tapTimer = setTimeout(() => {
-                                if (!cell.flagged && !cell.revealed && !minesGameOver) {
-                                    revealMinesCell(r, c);
-                                    renderMines();
-                                }
-                                tapTimer = null;
-                            }, 350);
-                        }
-                    });
-
-                    // Правая кнопка мыши — поставить флажок
-                    div.addEventListener('contextmenu', (e) => {
-                        e.preventDefault();
-                        if (minesGameOver) return;
-                        if (cell.revealed) return;
-                        if (!cell.flagged) {
-                            cell.flagged = true;
-                            renderMines();
-                        }
-                    });
-
-                    boardEl.appendChild(div);
-                }
-            }
+        function spawnTarget() {
+            if (!shootActive) return;
+            const target = document.createElement('div');
+            target.className = 'target';
+            target.textContent = '🎯';
+            const maxX = shootArea.clientWidth - 50;
+            const maxY = shootArea.clientHeight - 50;
+            target.style.left = Math.random() * maxX + 'px';
+            target.style.top = Math.random() * maxY + 'px';
+            target.onclick = (e) => {
+                e.stopPropagation();
+                if (!shootActive) return;
+                shootScore += 10;
+                document.getElementById('shootScore').textContent = shootScore;
+                target.remove();
+                spawnTarget();
+            };
+            shootArea.appendChild(target);
         }
-
-        function revealMinesCell(r, c) {
-            const cell = minesBoard[r][c];
-            if (cell.revealed || cell.flagged) return;
-            cell.revealed = true;
-
-            if (cell.mine) {
-                minesGameOver = true;
-                clearInterval(minesTimerInterval);
-                for (let i = 0; i < minesRows; i++) {
-                    for (let j = 0; j < minesCols; j++) {
-                        if (minesBoard[i][j].mine) minesBoard[i][j].revealed = true;
-                    }
-                }
-                renderMines();
-                alert('💥 Ты подорвался! Игра окончена.');
-                return;
+        // Клик по пустому месту — штраф? Нет, просто игнорируем
+        shootArea.addEventListener('click', (e) => {
+            if (e.target === shootArea && shootActive) {
+                // Можно добавить штраф, но пока просто ничего
             }
-
-            if (cell.count === 0) {
-                for (let dr = -1; dr <= 1; dr++) {
-                    for (let dc = -1; dc <= 1; dc++) {
-                        const nr = r + dr, nc = c + dc;
-                        if (nr >= 0 && nr < minesRows && nc >= 0 && nc < minesCols) {
-                            revealMinesCell(nr, nc);
-                        }
-                    }
-                }
-            }
-
-            let safeRevealed = 0, totalSafe = minesRows * minesCols - minesCount;
-            for (let i = 0; i < minesRows; i++) {
-                for (let j = 0; j < minesCols; j++) {
-                    if (minesBoard[i][j].revealed && !minesBoard[i][j].mine) safeRevealed++;
-                }
-            }
-            if (safeRevealed === totalSafe && !minesGameOver) {
-                minesGameOver = true;
-                clearInterval(minesTimerInterval);
-                alert('🎉 Победа! Ты нашёл все безопасные клетки!');
-            }
-        }
-
-        startMines();
+        });
     </script>
 </body>
 </html>
