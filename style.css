@@ -112,6 +112,31 @@
     --shadow: rgba(139, 0, 0, 0.5);
     --accent: #FF5252;
 }
+[data-theme="sakura"] {
+    --primary: #F48FB1;
+    --primary-dark: #D81B60;
+    --primary-light: #F8BBD0;
+    --bg: linear-gradient(135deg, #FCE4EC 0%, #F8BBD0 50%, #F48FB1 100%);
+    --card-bg: rgba(255, 255, 255, 0.5);
+    --card-border: rgba(216, 27, 96, 0.3);
+    --text: #4A148C;
+    --text-dim: rgba(74, 20, 140, 0.65);
+    --shadow: rgba(216, 27, 96, 0.2);
+    --accent: #AD1457;
+}
+
+[data-theme="ice"] {
+    --primary: #4FC3F7;
+    --primary-dark: #0277BD;
+    --primary-light: #B3E5FC;
+    --bg: linear-gradient(135deg, #E1F5FE 0%, #B3E5FC 50%, #81D4FA 100%);
+    --card-bg: rgba(255, 255, 255, 0.55);
+    --card-border: rgba(2, 119, 189, 0.3);
+    --text: #01579B;
+    --text-dim: rgba(1, 87, 155, 0.65);
+    --shadow: rgba(2, 119, 189, 0.2);
+    --accent: #0277BD;
+}
 /* ===== БАЗОВЫЕ СТИЛИ ===== */
 * {
     margin: 0;
@@ -314,6 +339,8 @@ body {
 .theme-secret { background: linear-gradient(135deg, #FFD700, #FF8C00); color: #2D1B00; }
 .theme-yellow { background: linear-gradient(135deg, #FFD54F, #FF8F00); color: #3E2723; }
 .theme-darkred { background: linear-gradient(135deg, #D32F2F, #4a1515); }
+.theme-sakura { background: linear-gradient(135deg, #F8BBD0, #F48FB1); color: #4A148C; }
+.theme-ice { background: linear-gradient(135deg, #B3E5FC, #81D4FA); color: #01579B; }
 
 .close-btn {
     width: 100%;
