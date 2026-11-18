@@ -137,6 +137,19 @@
     --shadow: rgba(2, 119, 189, 0.2);
     --accent: #0277BD;
 }
+[data-theme="brown"] {
+    --primary: #8D6E63;
+    --primary-dark: #5D4037;
+    --primary-light: #BCAAA4;
+    --bg: linear-gradient(135deg, #4E342E 0%, #3E2723 50%, #271815 100%);
+    --card-bg: rgba(255, 255, 255, 0.08);
+    --card-border: rgba(255, 255, 255, 0.15);
+    --text: #EFEBE9;
+    --text-dim: rgba(239, 235, 233, 0.7);
+    --shadow: rgba(0, 0, 0, 0.5);
+    --accent: #D7CCC8;
+
+}
 /* ===== БАЗОВЫЕ СТИЛИ ===== */
 * {
     margin: 0;
@@ -341,6 +354,7 @@ body {
 .theme-darkred { background: linear-gradient(135deg, #D32F2F, #4a1515); }
 .theme-sakura { background: linear-gradient(135deg, #F8BBD0, #F48FB1); color: #4A148C; }
 .theme-ice { background: linear-gradient(135deg, #B3E5FC, #81D4FA); color: #01579B; }
+.theme-brown { background: linear-gradient(135deg, #8D6E63, #4E342E); }
 
 .close-btn {
     width: 100%;
